@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">PackageDeliveryApp</string>
+    <string name="fb_app_id">500315826999745</string>
+    <string name="fb_login_protocol_scheme">fb500315826999745</string>
+</resources>
