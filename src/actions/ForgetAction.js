@@ -1,8 +1,8 @@
-
+import { FORGOT_PASSWORD } from '../constant/index';
 export const FORGOT_SUCCESS = 'forgot_success';
 export const FORGOT_FAIL = 'forgot_fail';
 export const LOADING_FORGOT = 'loading_forgot';
-import { FORGOT_PASSWORD } from '../constant/index';
+
 export const forget = (email) => {
     return function (dispatch) {
         var data={

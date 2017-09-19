@@ -10,7 +10,8 @@ import Events from './components/events'
 import Profile from './components/profile'
 import Forget from './components/ForgetPasswordScreen'
 import MenuIcon from './components/images/menu.png';
-import PostPackageScreen from './components/PostPackageScreen'
+import PostPackageScreen from './components/PostPackageScreen';
+import ParcelDetailScreen from './components/ParcelDetailScreen'
 
 class TabIcon extends Component {
   render() {
@@ -52,6 +53,11 @@ const Route = () => (
         component={PostPackageScreen}
         title="Select Location"
       />
+      <Scene
+        key="ParcelDetail"
+        component={ParcelDetailScreen}
+        title="Parcel Detail"
+      />
       <Drawer
         key="drawer"
         drawer
@@ -65,7 +71,7 @@ const Route = () => (
           <Scene
             key="home"
             component={Home}
-            title='Select Job'
+            title="Select Job"
             icon={TabIcon}
             iconName="home"
           />

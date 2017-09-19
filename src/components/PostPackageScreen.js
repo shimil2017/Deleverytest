@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Button } from 'react-native-elements';
 const window = Dimensions.get('window');
 import Geocoder from 'react-native-geocoding';
+import { Actions } from 'react-native-router-flux';
 export default class PostPackageScreen extends Component{
   constructor(props) {
     super(props);
@@ -26,16 +27,17 @@ export default class PostPackageScreen extends Component{
         startAddress:'',
         endAddress:'',
         loading:false,
+        showContinueButton: false,
 
     };
     //AIzaSyBgykJIQqrUq9XOgs4G8YL5DuSGrE_oPZs
     Geocoder.setApiKey('AIzaSyBgykJIQqrUq9XOgs4G8YL5DuSGrE_oPZs');
   }
   onClickSource(){
-    this.setState({isSource:true,isDestination:false, showButton:true});
+    this.setState({isSource:true,isDestination:false, showButton:true, showContinueButton:false });
   }
   onClickDestination(){
-    this.setState({isSource:false,isDestination:true, showButton:true});
+    this.setState({isSource:false,isDestination:true, showButton:true, showContinueButton:false });
   }
   onClickSubmit(){
     if (this.state.isSource == true) {
@@ -47,6 +49,7 @@ export default class PostPackageScreen extends Component{
             var address_component = json.results[0].formatted_address;
             this.setState({startAddress: address_component});
             if (this.state.originLatitude !== 0 && this.state.destinationLatitude !== 0) {
+              this.setState({showContinueButton: true});
               this.map.fitToCoordinates([
                 {latitude:this.state.originLatitude,longitude:this.state.originLongitude},
                 {latitude:this.state.destinationLatitude,longitude:this.state.destinationLongitude}
@@ -70,6 +73,7 @@ export default class PostPackageScreen extends Component{
             var address_component = json.results[0].formatted_address;
             this.setState({endAddress: address_component});
             if (this.state.originLatitude !== 0 && this.state.destinationLatitude !== 0) {
+              this.setState({showContinueButton: true});
               this.map.fitToCoordinates([
                 {latitude:this.state.originLatitude,longitude:this.state.originLongitude},
                 {latitude:this.state.destinationLatitude,longitude:this.state.destinationLongitude}
@@ -106,7 +110,7 @@ export default class PostPackageScreen extends Component{
               left: 0,
               right: 0,
               bottom: 0,}}
-        region={this.state.region}
+        initialRegion={this.state.region}
         onRegionChange={(region) => this.setState({ region: region })}
         >
         {
@@ -154,7 +158,7 @@ export default class PostPackageScreen extends Component{
                 {
                   (this.state.startAddress === '')?
                   <Text > Start Point</Text>
-                  :
+                    :
                   <Text >{this.state.startAddress}</Text>
                 }
               </TouchableOpacity>
@@ -193,9 +197,14 @@ export default class PostPackageScreen extends Component{
           }
 
           {
-            (this.state.originLatitude !== 0 && this.state.destinationLatitude !== 0)?
+            (this.state.showContinueButton === true)?
             <Button
-
+              onPress={()=> Actions.ParcelDetail({ originLatitude: this.state.originLatitude,
+              originLongitude: this.state.originLongitude,
+              destinationLatitude: this.state.destinationLatitude,
+              destinationLongitude: this.state.destinationLongitude,
+              startAddress: this.state.startAddress,
+              endAddress: this.state.endAddress })}
               raised
               buttonStyle={{backgroundColor: '#00cccc', borderRadius:5}}
               textStyle={{textAlign: 'center',fontWeight:'500'}}
