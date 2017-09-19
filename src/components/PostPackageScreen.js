@@ -25,6 +25,8 @@ export default class PostPackageScreen extends Component{
         showButton: false,
         startAddress:'',
         endAddress:'',
+        loading:false,
+
     };
     //AIzaSyBgykJIQqrUq9XOgs4G8YL5DuSGrE_oPZs
     Geocoder.setApiKey('AIzaSyBgykJIQqrUq9XOgs4G8YL5DuSGrE_oPZs');
@@ -38,11 +40,21 @@ export default class PostPackageScreen extends Component{
   onClickSubmit(){
     if (this.state.isSource == true) {
         this.setState({ originLatitude:this.state.region.latitude,originLongitude:this.state.region.longitude });
-        this.setState({isSource: true, isDestination: true, showButton:false});
+        this.setState({isSource: true, isDestination: true, showButton:false,loading: true});
         Geocoder.getFromLatLng(this.state.region.latitude, this.state.region.longitude).then(
           json => {
-            var address_component = json.results[0].address_components[0];
-            alert(address_component.long_name);
+            console.log("Address DATA",JSON.stringify(json.results[0].formatted_address));
+            var address_component = json.results[0].formatted_address;
+            this.setState({startAddress: address_component});
+            if (this.state.originLatitude !== 0 && this.state.destinationLatitude !== 0) {
+              this.map.fitToCoordinates([
+                {latitude:this.state.originLatitude,longitude:this.state.originLongitude},
+                {latitude:this.state.destinationLatitude,longitude:this.state.destinationLongitude}
+              ], {
+              edgePadding: { top: 100, right: 100, bottom: 100, left: 100 },
+              animated: true,
+              });
+            }
           },
           error => {
             alert(error);
@@ -51,11 +63,31 @@ export default class PostPackageScreen extends Component{
     }
     if (this.state.isDestination == true) {
         this.setState({ destinationLatitude: this.state.region.latitude,destinationLongitude:this.state.region.longitude });
-        this.setState({isSource: true, isDestination: true,showButton:false});
-    }
+        this.setState({isSource: true, isDestination: true,showButton:false,loading: true});
+        Geocoder.getFromLatLng(this.state.region.latitude, this.state.region.longitude).then(
+          json => {
+            console.log("Address DATA",JSON.stringify(json.results[0].formatted_address));
+            var address_component = json.results[0].formatted_address;
+            this.setState({endAddress: address_component});
+            if (this.state.originLatitude !== 0 && this.state.destinationLatitude !== 0) {
+              this.map.fitToCoordinates([
+                {latitude:this.state.originLatitude,longitude:this.state.originLongitude},
+                {latitude:this.state.destinationLatitude,longitude:this.state.destinationLongitude}
+              ], {
+              edgePadding: { top: 100, right: 100, bottom: 100, left: 100 },
+              animated: true,
+              });
+            }
 
+          },
+          error => {
+            alert(error);
+          }
+        );
+    }
   }
   render() {
+    var _this=this;
   return (
     <View style={{
         position: 'absolute',
@@ -65,14 +97,17 @@ export default class PostPackageScreen extends Component{
         bottom: 0,}}>
 
      <MapView
-          style={{
+       ref={ref => { this.map = ref; }}
+
+       fitToElements={true}
+       style={{
               position: 'absolute',
               top: 0,
               left: 0,
               right: 0,
               bottom: 0,}}
-          region={this.state.region}
-          onRegionChange={(region) => this.setState({ region: region })}
+        region={this.state.region}
+        onRegionChange={(region) => this.setState({ region: region })}
         >
         {
           (this.state.showButton)?
@@ -88,6 +123,7 @@ export default class PostPackageScreen extends Component{
         {
           (!this.state.showButton)?
             <MapView.Marker
+              key={1}
               coordinate={{longitude: this.state.originLongitude,latitude: this.state.originLatitude }}
               title='Source'
               description='Source Point'
@@ -99,6 +135,7 @@ export default class PostPackageScreen extends Component{
         {
           (!this.state.showButton)?
             <MapView.Marker
+              key={2}
               coordinate={{latitude: this.state.destinationLatitude,longitude: this.state.destinationLongitude }}
               title='Destination'
               description='Destination Point'
@@ -112,14 +149,14 @@ export default class PostPackageScreen extends Component{
           {
             (this.state.isSource ===  true )?
             <View style={{flexDirection:'row',padding:10,width:window.width, backgroundColor:'#fff',margin:10 }}>
-              <Icon name="location-on" size={25} color='#606060' style={{backgroundColor:'transparent'}} />
+              <Icon name="location-on" size={25} color='green' style={{backgroundColor:'transparent'}} />
               <TouchableOpacity onPress={()=> this.onClickSource()}>
                 {
                   (this.state.startAddress === '')?
                   <Text > Start Point</Text>
                   :
-                <Text >{this.state.startAddress }</Text>
-              }
+                  <Text >{this.state.startAddress}</Text>
+                }
               </TouchableOpacity>
             </View>
             :
@@ -128,9 +165,14 @@ export default class PostPackageScreen extends Component{
           {
             (this.state.isDestination === true)?
             <View style={{flexDirection:'row',padding:10,width:window.width, backgroundColor:'#fff',margin:10 }}>
-              <Icon name="location-on" size={25} color='#606060' style={{backgroundColor:'transparent'}} />
+              <Icon name="location-on" size={25} color='red' style={{backgroundColor:'transparent'}} />
               <TouchableOpacity onPress={()=> this.onClickDestination()}>
-                <Text >End Locations</Text>
+                {
+                  (this.state.endAddress === '')?
+                  <Text > End Point</Text>
+                  :
+                  <Text >{this.state.endAddress}</Text>
+                }
               </TouchableOpacity>
             </View>
             :
