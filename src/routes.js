@@ -36,7 +36,7 @@ const Route = () => (
         component={Loginpage}
         title="Login"
         hideNavBar
-
+        initial
       />
       <Scene
         key="register"
@@ -65,7 +65,7 @@ const Route = () => (
         hideNavBar
         navigationBarStyle={{backgroundColor:' #e62e00' }}
         drawerImage={MenuIcon}
-        initial
+
       >
         <Scene key="tab" tabs tabBarPosition='bottom' showLabel={false} tabBarStyle={{backgroundColor:'green'}}>
           <Scene

@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Icon from 'react-native-vector-icons/EvilIcons'
 import { Actions } from 'react-native-router-flux'
-import { addPackage, loadingStarted,loginFB } from '../actions/LoginAction';
+import { login, loadingStarted,loginFB } from '../actions/LoginAction';
 import PropTypes from 'prop-types';
 var { FBLogin, FBLoginManager } = require('react-native-facebook-login');
 

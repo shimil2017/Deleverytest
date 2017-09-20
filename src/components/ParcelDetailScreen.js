@@ -33,7 +33,8 @@ class ParcelDetailScreen extends Component{
           dimension:'',
           quantity:'',
           price:'',
-          avatarSource:null
+          avatarSource:null,
+          base64:''
         }
       }
       selectPhotoTapped() {
@@ -50,7 +51,9 @@ class ParcelDetailScreen extends Component{
             let source = { uri: response.uri };
 
             // You can also display the image using data:
-            // let source = { uri: 'data:image/jpeg;base64,' + response.data };
+             let base64Strng = { uri: 'data:image/jpeg;base64,' + response.data };
+             console.log("base64--",base64Strng.uri);
+             this.setState({ base64:base64Strng.uri })
 
             this.setState({
               avatarSource: source
@@ -76,9 +79,9 @@ class ParcelDetailScreen extends Component{
           this.props.loadingStarted();
           try {
             const value = AsyncStorage.getItem('user_id',(err, result) => {
-                
+
                 const requestJSON = {
-                    image: "",
+                    image: this.state.base64,
                     package_name:"",
                     weight:this.state.weight,
                     source:this.props.startAddress,
