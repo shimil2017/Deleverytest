@@ -28,7 +28,7 @@ export const addPackage = (requestJSON) => {
           alert(responseJson.message);
           dispatch({
             type: ADD_PACKAGE_SUCCESS,
-            payload: responseJson,
+              payload: responseJson,
           });
         }
       })
