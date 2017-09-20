@@ -115,9 +115,9 @@ class ParcelDetailScreen extends Component{
     }
     render(){
         return(
-            <ScrollView style={{backgroundColor:'lightgrey',padding:20}}>
+          <ScrollView style={{backgroundColor:'lightgrey',padding:20}}>
               <View style={{alignItems:'center'}}>
-                <Text>Upload Image:</Text>
+                <Text style={{fontWeight:'bold'}}>Upload Image:</Text>
                 <TouchableOpacity onPress={this.selectPhotoTapped.bind(this)} style={[styles.avatar, {alignItems:'center'}]}>
                     <View style={[styles.avatar, styles.avatarContainer, {alignItems:'center',backgroundColor:'grey'}]}>
                     { this.state.avatarSource === null ? <Text style={{backgroundColor:'transparent'}}>Select a Photo</Text> :
@@ -126,69 +126,100 @@ class ParcelDetailScreen extends Component{
                     </View>
                 </TouchableOpacity>
                 </View>
-                <Text>Parcel Information:</Text>
+                <Text style={{fontWeight:'bold'}}>Parcel Information:</Text>
                 <View style={styles.container}>
                     <View style={styles.row}>
                         <View style={{marginTop:20,flex:0.5}}>
+                          <View style={{flex:0.5,paddingLeft:20}}>
+                            <Text>Length(m):</Text>
+                          </View>
+                          <View style={{flex:0.5}}>
                             <FormInput
                             onChangeText={(text) => this.setState({length:text})}
                             placeholder='Length'
                             placeholderTextColor='#d9d9d9'
-                            style={{color:'#d9d9d9',width:window.width-40}}
+                            style={{color:'black',width:window.width-50}}
                             containerStyle={{borderColor:'grey',backgroundColor:'#F5FCFF'}}
+                            keyboardType='numeric'
                             />
+                          </View>
                         </View>
                         <View style={{marginTop:20,flex:0.5}}>
+                          <View style={{flex:0.5,paddingLeft:20}}>
+                            <Text>Height(m):</Text>
+                          </View>
+                          <View style={{flex:0.5}}>
                             <FormInput
                             onChangeText={(text) => this.setState({dimension:text})}
-                            placeholder='Dimensions'
+                            placeholder='Height'
                             placeholderTextColor='#d9d9d9'
-                            style={{color:'#d9d9d9',width:window.width-40}}
+                            style={{color:'black',width:window.width-40}}
                             containerStyle={{borderColor:'grey',backgroundColor:'#F5FCFF'}}
+                            keyboardType='numeric'
                             />
+                          </View>
                         </View>
                     </View>
                     <View style={styles.row}>
                         <View style={{marginTop:20,flex:0.5}}>
+                          <View style={{flex:0.5,paddingLeft:20}}>
+                            <Text>Weight(kg):</Text>
+                          </View>
+                          <View style={{flex:0.5}}>
                             <FormInput
                             onChangeText={(text) => this.setState({weight:text})}
                             placeholder='Weight'
                             placeholderTextColor='#d9d9d9'
-                            style={{color:'#d9d9d9',width:window.width-40}}
+                            style={{color:'black',width:window.width-40}}
                             containerStyle={{borderColor:'grey',backgroundColor:'#F5FCFF'}}
+                            keyboardType='numeric'
                             />
+                          </View>
                         </View>
                         <View style={{marginTop:20,flex:0.5}}>
+                          <View style={{flex:0.5,paddingLeft:20}}>
+                            <Text>Quantity:</Text>
+                          </View>
+                          <View style={{flex:0.5}}>
                             <FormInput
                             onChangeText={(text) => this.setState({quantity:text})}
                             placeholder='Quantity'
                             placeholderTextColor='#d9d9d9'
-                            style={{color:'#d9d9d9',width:window.width-40}}
+                            style={{color:'black',width:window.width-40}}
                             containerStyle={{borderColor:'grey',backgroundColor:'#F5FCFF'}}
+                            keyboardType='numeric'
                             />
+                          </View>
                         </View>
-                    </View>
+                    </View> 
                     <View style={styles.row}>
                         <View style={{marginTop:20,flex:1}}>
+                          <View style={{flex:0.5,paddingLeft:20}}>
+                            <Text>Price($):</Text>
+                          </View>
+                          <View style={{flex:0.5}}>
                             <FormInput
                             onChangeText={(text) => this.setState({price:text})}
                             placeholder='Price'
                             placeholderTextColor='#d9d9d9'
-                            style={{color:'#d9d9d9',width:window.width-40}}
+                            style={{color:'black',width:window.width-40}}
                             containerStyle={{borderColor:'grey',backgroundColor:'#F5FCFF'}}
+                            keyboardType='numeric'
                             />
-                        </View>
+                          </View>
+                        </View>  
                     </View>
                 </View>
                 <View style={{marginTop:20}}>
-                    <Text>Add description of parcel:</Text>
+                    <Text style={{fontWeight:'bold'}}>Add description of parcel:</Text>
                     <View style={{marginTop:20}}>
                         <FormInput
                             onChangeText={(text) => this.setState({description:text})}
                             placeholder='Description'
                             placeholderTextColor='#d9d9d9'
-                            style={{color:'#d9d9d9',width:window.width-40,height:60}}
+                            style={{color:'black',width:window.width-40,height:60}}
                             containerStyle={{borderColor:'grey',backgroundColor:'#F5FCFF'}}
+                            multiline={true}
                         />
                     </View>
                 </View>
@@ -199,11 +230,6 @@ class ParcelDetailScreen extends Component{
                     textStyle={{textAlign: 'center',fontWeight:'500'}}
                     title={`Submit`}
                     onPress={()=>this.submit()}
-                    />
-                    <ActivityIndicator
-                      size='large'
-                      color='#3f51b5' animating={this.props.loading}
-                      style={{ position:'absolute', alignItems: 'center', alignSelf: 'center' ,marginTop: window.height/2-100, left: window.width/2-35 }}
                     />
                 </View>
               </ScrollView>
