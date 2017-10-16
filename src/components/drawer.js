@@ -1,9 +1,19 @@
 import React, { Component } from 'react'
-import { View,Text,TextInput,ScrollView,TouchableOpacity,Image,StyleSheet } from 'react-native';
+import { View,Text,TextInput,ScrollView,TouchableOpacity,Image,StyleSheet,Alert } from 'react-native';
 import { Button,FormInput } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { bindActionCreator } from 'redux';
+import { connect } from 'react-redux';
+import {  logout } from '../actions/LoginAction';
+import { Actions } from 'react-native-router-flux';
+const mapStateToProps = ({ LoginReducer, SignUpReducer }) => {
+  return {
+    isRegistered: SignUpReducer.isRegistered,
+    loggedIn: LoginReducer.loggedIn,
 
-export default class Drawer extends Component{
+  };
+};
+class Drawer extends Component{
 
     constructor(props){
       super(props)
@@ -13,6 +23,19 @@ export default class Drawer extends Component{
         buyerIcon: 'expand-more',
         travelerIcon:'expand-more'
       }
+  }
+  onLogoutPress(){
+    //this.Drawer.close();
+    Actions.refresh({key: 'drawer', open: value => !value });
+    Alert.alert(
+  'Logout',
+  'Are you sure you want to logout?',
+  [
+    {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+    {text: 'OK', onPress: () => this.props.logout()},
+  ],
+  { cancelable: false }
+)
   }
   expandBuyer(){
     if (this.state.isBuyer === true) {
@@ -31,16 +54,22 @@ export default class Drawer extends Component{
   render(){
     return(
       <View style={styles.container}>
-          <View style={styles.element}>
-            <View style={styles.icon}>
-              <Icon name="call-to-action" size={25} color='#606060' style={{backgroundColor:'transparent'}} />
-            </View>
-            <View style={styles.textarea}>
-            <TouchableOpacity onPress={()=>alert("profile")}>
-              <Text style={styles.text}>My Profile</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
+        {
+          (this.props.loggedIn === true || this.props.isRegistered === true )?
+            <View style={styles.element}>
+              <View style={styles.icon}>
+                <Icon name="call-to-action" size={25} color='#606060' style={{backgroundColor:'transparent'}} />
+              </View>
+              <View style={styles.textarea}>
+              <TouchableOpacity onPress={()=>Actions.profile()}>
+                <Text style={styles.text}>My Profile</Text>
+                </TouchableOpacity>
+              </View>
+              </View>
+              :
+              null
+        }
+
           <View style={styles.element}>
             <View style={styles.icon}>
               <Icon name={this.state.buyerIcon} size={30} color='#606060' style={{backgroundColor:'transparent'}} />
@@ -56,10 +85,26 @@ export default class Drawer extends Component{
 
               <View style={{flex:.11,flexDirection:'row',marginLeft:20}}>
                 <View style={styles.icon}>
+                  <Icon name="add" size={25} color='#606060' style={{backgroundColor:'transparent'}} />
+                </View>
+                <View style={styles.textarea}>
+                <TouchableOpacity onPress={()=> Actions.PostPackageScreen()}>
+                  <Text style={styles.text}>Add Package</Text>
+                </TouchableOpacity>
+                </View>
+              </View>
+              :
+              <View></View>
+          }
+          {
+            (this.state.isBuyer === true )?
+
+              <View style={{flex:.11,flexDirection:'row',marginLeft:20}}>
+                <View style={styles.icon}>
                   <Icon name="view-quilt" size={25} color='#606060' style={{backgroundColor:'transparent'}} />
                 </View>
                 <View style={styles.textarea}>
-                <TouchableOpacity onPress={()=>alert("post")}>
+                <TouchableOpacity onPress={()=>alert("Under development")}>
                   <Text style={styles.text}>My Current Posts</Text>
                 </TouchableOpacity>
                 </View>
@@ -75,7 +120,7 @@ export default class Drawer extends Component{
                 <Icon name="history" size={25} color='#606060' style={{backgroundColor:'transparent'}} />
               </View>
               <View style={styles.textarea}>
-              <TouchableOpacity onPress={()=>alert("pre")}>
+              <TouchableOpacity onPress={()=>alert("Under development")}>
                 <Text style={styles.text}>Previous Posts</Text>
                 </TouchableOpacity>
               </View>
@@ -100,7 +145,7 @@ export default class Drawer extends Component{
                   <Icon name="date-range" size={25} color='#606060' style={{backgroundColor:'transparent'}} />
                 </View>
                 <View style={styles.textarea}>
-                <TouchableOpacity onPress={()=>alert("manage")}>
+                <TouchableOpacity onPress={()=>Actions.TravelPlanScreen()}>
                   <Text style={styles.text}>Manage Availability</Text>
                   </TouchableOpacity>
                 </View>
@@ -115,7 +160,7 @@ export default class Drawer extends Component{
                  <Icon name="reply" size={25} color='#606060' style={{backgroundColor:'transparent'}} />
                </View>
                <View style={styles.textarea}>
-               <TouchableOpacity onPress={()=>alert("deliver")}>
+               <TouchableOpacity onPress={()=>alert("Under development")}>
                  <Text style={styles.text}>Delivery Requests</Text>
                  </TouchableOpacity>
                </View>
@@ -130,7 +175,7 @@ export default class Drawer extends Component{
                 <Icon name="reply" size={25} color='#606060' style={{backgroundColor:'transparent'}} />
               </View>
               <View style={styles.textarea}>
-              <TouchableOpacity onPress={()=>alert("deliver")}>
+              <TouchableOpacity onPress={()=>alert("Under development")}>
                 <Text style={styles.text}>Successful Delivery</Text>
                 </TouchableOpacity>
               </View>
@@ -143,7 +188,7 @@ export default class Drawer extends Component{
               <Icon name="notifications" size={25} color='#606060' style={{backgroundColor:'transparent'}} />
             </View>
             <View style={styles.textarea}>
-            <TouchableOpacity onPress={()=>alert("notifs")}>
+            <TouchableOpacity onPress={()=>alert("Under development")}>
               <Text style={styles.text}>Notifications</Text>
               </TouchableOpacity>
             </View>
@@ -153,26 +198,41 @@ export default class Drawer extends Component{
               <Icon name="help" size={25} color='#606060' style={{backgroundColor:'transparent'}} />
             </View>
             <View style={styles.textarea}>
-            <TouchableOpacity onPress={()=>alert("help")}>
+            <TouchableOpacity onPress={()=>alert("Under development")}>
               <Text style={styles.text}>Help</Text>
               </TouchableOpacity>
             </View>
             </View>
-            <View style={styles.element}>
-              <View style={styles.icon}>
-                <Icon name="file-upload" size={25} color='#606060' style={{backgroundColor:'transparent'}} />
+            {
+              (this.props.loggedIn === true || this.props.isRegistered === true )?
+              <View style={styles.element}>
+                <View style={styles.icon}>
+                  <Icon name="file-upload" size={25} color='#606060' style={{backgroundColor:'transparent'}} />
+                </View>
+                <View style={styles.textarea}>
+                <TouchableOpacity onPress={()=>this.onLogoutPress()}>
+                  <Text style={styles.text}>LogOut</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-              <View style={styles.textarea}>
-              <TouchableOpacity onPress={()=>alert("logout")}>
-                <Text style={styles.text}>LogOut</Text>
-                </TouchableOpacity>
+              :
+              <View style={styles.element}>
+                <View style={styles.icon}>
+                  <Icon name="touch-app" size={25} color='#606060' style={{backgroundColor:'transparent'}} />
+                </View>
+                <View style={styles.textarea}>
+                <TouchableOpacity onPress={()=>Actions.login()}>
+                  <Text style={styles.text}>Login</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
+            }
+
       </View>
     )
   }
 }
-
+export default connect(mapStateToProps,{logout})(Drawer);
 const styles= StyleSheet.create({
   container :{
     flex:1

@@ -1,14 +1,15 @@
 import React, { Component } from 'react'
-import { View,Text,TextInput,ScrollView,TouchableOpacity,Image,KeyboardAvoidingVie, ActivityIndicator, ImageBackground } from 'react-native';
-import { Button,FormInput, SocialIcon } from 'react-native-elements';
+import { View,TextInput,ScrollView,TouchableOpacity,Image,KeyboardAvoidingVie, StatusBar, Dimensions,ActivityIndicator, ImageBackground } from 'react-native';
+import { FormInput, SocialIcon } from 'react-native-elements';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import Icon from 'react-native-vector-icons/EvilIcons'
-import { Actions } from 'react-native-router-flux'
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import { Actions } from 'react-native-router-flux';
 import { login, loadingStarted,loginFB } from '../actions/LoginAction';
 import PropTypes from 'prop-types';
+import { Container, Content, Form, Item, Input, Label, Button, Text, Spinner } from 'native-base';
 var { FBLogin, FBLoginManager } = require('react-native-facebook-login');
-
+const window = Dimensions.get('window');
 const mapStateToProps = ({ LoginReducer }) => {
   return {
     email: LoginReducer.email,
@@ -30,6 +31,7 @@ class Loginpage extends Component{
       pass: '',
       user: null
     }
+    StatusBar.setBarStyle('light-content', true);
   }
   submit(){
     if(this.state.email === '')
@@ -56,9 +58,8 @@ class Loginpage extends Component{
      'last_name':lname,
      'loginType':2,
      'facebook_id':facebook_id,
-
   }
-  }
+}
 onLoginWithFB(){
  let _this = this;
 //this.props.ShowLoader();
@@ -75,7 +76,7 @@ onLoginWithFB(){
 }
 GraphApiCall(UserFbId,Fbtoken){
    let _this = this;
-      var api = `https://graph.facebook.com/v2.3/${UserFbId}?fields=name,first_name,last_name,email,picture&access_token=${Fbtoken}`;
+      var api = `https://graph.facebook.com/v2.3/${UserFbId}?fields=name,first_name,last_name,email,gender,picture.height(1080)&access_token=${Fbtoken}`;
 
        fetch(api)
 
@@ -85,7 +86,7 @@ GraphApiCall(UserFbId,Fbtoken){
             let jsonV = JSON.stringify(responseData);
             console.log('fbInfo'+responseData.first_name);
             _this.props.loadingStarted();
-            _this.props.loginFB(responseData.first_name,responseData.last_name,responseData.email,responseData.id);
+            _this.props.loginFB(responseData.first_name,responseData.last_name,responseData.email,responseData.id,responseData.picture.data.url,responseData.gender);
           // _this.fbLogin(responseData.email,'password',responseData.id,responseData.first_name,responseData.last_name);
        }).catch((error) => {
            console.log("error is coming",error);
@@ -97,86 +98,200 @@ GraphApiCall(UserFbId,Fbtoken){
             var _this = this;
     return(
 
-        <ImageBackground
-        source={require('./images/login1_bg.png')}
-        style={{flex:1,width:undefined,height:undefined}}>
-          <View style={{flex:0.5,justifyContent:'center',paddingTop:30,paddingLeft:90,paddingRight:90}}>
-            <Image
-            style={{flex:.7,width:undefined,height:undefined,backgroundColor:'#3399ff'}}
-            source={require('./images/Microsoft-Logo-icon-png-Transparent-Background-768x768.png')}>
-            </Image>
-          </View>
-          <View style={{flex:0.15,paddingLeft:30,paddingRight:30,justifyContent:'space-around',}}>
-              <View style={{flex:0.45,borderBottomColor:'#d9d9d9',borderBottomWidth:.5,flexDirection:'row'}}>
-                <View style={{flex:.1,justifyContent:'center',alignItems:'flex-end'}}>
-                  <Icon name="envelope" size={30} color='#d9d9d9' style={{backgroundColor:'transparent'}} />
-                </View>
-                <View style={{flex:.9,justifyContent:'center'}}>
-                  <FormInput
-                  onChangeText={(text) => this.setState({email:text})}
-                  placeholder='E-mail'
+      <View style={{ flex: 1, height: window.height,backgroundColor:'white' }}>
+        <Container >
+          <Content >
+            <View style={{ position: 'absolute', flexDirection: 'column', width: window.width, height: window.height/2 }}>
+              <View style={{ backgroundColor: '#ffffff', flex: 1 }} />
+            </View>
+            <Form style={{  padding: 20, borderColor: "#eeeeee", borderWidth: 1, backgroundColor: '#ffffff' }}>
+              <Image source={require('./images/logo_login.png')} style={{alignSelf:'center'}}/>
+              <Item >
+                <Icon name="email" size={25} color='black'/>
+
+                <Input
+                  placeholder="Email-id"
                   keyboardType='email-address'
-                  autoCapitalize='none'
-                  placeholderTextColor='#d9d9d9'
-                  style={{color:'#d9d9d9'}}
-                  containerStyle={{borderBottomColor:'transparent'}}
-                  underlineColorAndroid='transparent'
-                  />
-                </View>
-              </View>
-              <View style={{flex:0.45,borderBottomColor:'#d9d9d9',borderBottomWidth:.5,flexDirection:'row'}}>
-                <View style={{flex:.1,justifyContent:'center',alignItems:'flex-end'}}>
-                  <Icon name="lock" size={30} color='#d9d9d9' style={{backgroundColor:'transparent'}} />
-                </View>
-                <View style={{flex:.9,justifyContent:'center'}}>
-                  <FormInput
-                  onChangeText={(text) => this.setState({pass:text})}
-                  placeholder='Password'
-                  placeholderTextColor='#d9d9d9'
-                  style={{color:'#d9d9d9'}}
-                  secureTextEntry={true}
-                  containerStyle={{borderBottomColor:'transparent'}}
-                  underlineColorAndroid='transparent'
-                  />
-                </View>
-              </View>
-          </View>
-          <View style={{flex:0.35,paddingTop:20,paddingLeft:10,paddingRight:10}}>
-              <View style={{flex:0.4,justifyContent:'center'}}>
+                  placeholderTextColor = "#aaaaaa"
+                  autoCapitalize = "none"
+                  onChangeText={(text) => this.setState({ email: text })}
+                />
+              </Item>
+              <Item >
+                <Icon name="lock" size={25} color='black'/>
+
+                <Input
+                  placeholder="Password"
+                  placeholderTextColor = "#aaaaaa"
+                  autoCapitalize = "none"
+                  secureTextEntry = {true}
+                  onChangeText={(text) => this.setState({ pass: text })}
+                />
+              </Item>
+              <TouchableOpacity
+                style={{ alignItems:"flex-end" }}
+                onPress={() => Actions.forgetpassword()}
+              >
+                <Text style = {{ color: 'black', fontSize: 16, marginTop: 20, justifyContent: "center" }}>
+                  Forgot password ?
+                </Text>
+              </TouchableOpacity>
                 <Button
-                raised
-                buttonStyle={{backgroundColor: '#00cccc', borderRadius:5}}
-                textStyle={{textAlign: 'center',fontWeight:'500'}}
-                title={`Sign in`}
-                onPress={()=>this.submit()}
-                />
-              </View>
-              <View style={{flex:0.3,justifyContent:'flex-start'}}>
-                <SocialIcon
-                  title='Sign In With Facebook'
-                  button
-                  type='facebook'
-                  onPress={() => this.onLoginWithFB()}
-                />
-              </View>
-              <View style={{marginTop:10,alignItems:'center'}}>
-                <TouchableOpacity onPress={()=> Actions.forgetpassword()}>
-                  <Text style={{fontSize:18,color:'#d9d9d9',backgroundColor:'transparent'}}>Forgot your password? </Text>
-                </TouchableOpacity>
-              </View>
-              <View style={{marginTop:10, alignItems:'center'}}>
-                <TouchableOpacity onPress={()=> Actions.register()}>
-                  <Text style={{fontSize:18,color:'#d9d9d9',backgroundColor:'transparent'}}>Don't have an account? </Text>
-                </TouchableOpacity>
-              </View>
-              <ActivityIndicator
-                size='large'
-                color='#3f51b5' animating={this.props.loading}
-                style={{ position:'absolute', alignItems: 'center', alignSelf: 'center' ,marginTop: window.height/2-100, left: window.width/2-35 }}
-              />
-          </View>
-        </ImageBackground>
+                  style={{
+                    backgroundColor: '#6945D1',
+                    flex:1,
+                    justifyContent: 'center',
+                    alignItems:"center",
+                    alignSelf:"center",
+                    width:300,
+                    marginTop:10
+                  }}
+                  primary
+                  rounded
+                  onPress={() => this.submit()}
+                >
+                  <Text >Submit</Text>
+                </Button>
+              <Text style={{marginTop:10,justifyContent: 'center',
+              alignItems:"center",
+              alignSelf:"center",}}>or</Text>
+
+              <Button
+                primary
+                rounded
+                style={{
+                  backgroundColor: '#3b5998',
+                  flex:1,
+                  justifyContent: 'center',
+                  alignItems:"center",
+                  alignSelf:"center",
+                  width:300,
+                  marginTop:10
+                }}
+                onPress={() => this.onLoginWithFB()}
+              >
+                <Text > Login via Facebook </Text>
+              </Button>
+
+            </Form>
+          </Content>
+        </Container>
+        <Spinner color='#3f51b5' animating={this.props.loading}
+          style={{ alignSelf:'center',position:'absolute', marginTop: window.height/2-100, left: window.width/2-35 }}
+        />
+      <View
+        style={
+          {justifyContent: 'center',alignItems:"center",padding:10,marginBottom:20,flexDirection:'row'}}>
+      <TouchableOpacity onPress={()=> Actions.register()}>
+        <Text >Don't have an account? </Text>
+      </TouchableOpacity>
+        <TouchableOpacity onPress={()=> Actions.register()}>
+          <Text style={{fontWeight:'bold'}}> Sign Up </Text>
+        </TouchableOpacity>
+      </View>
+
+      </View>
+
     )
   }
 }
 export default connect(mapStateToProps,mapDispatchToProps )(Loginpage);
+
+import { StyleSheet, PixelRatio, Platform } from 'react-native';
+
+ export const styles = {
+  spinnerStyle: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: 10
+  },
+  inputStyle: {
+    margin: 15,
+    height: 40,
+    borderWidth: 1
+  },
+  submitButton: {
+    backgroundColor: '#3f51b5',
+    padding: 10,
+    margin: 5,
+    height: 40,
+    flex:1,
+    borderRadius: 0,
+    justifyContent: 'center',
+    alignItems:"center",
+    alignSelf:"flex-end"
+  },
+  registerButton: {
+    backgroundColor: '#ef6c00',
+    padding: 10,
+    margin: 5,
+    height: 40,
+    flex:1,
+    borderRadius: 0,
+    justifyContent: 'center',
+    alignItems:"center",
+    alignSelf:"flex-end"
+  },
+  container: {
+    flex: 1,
+    marginTop:60,
+    marginBottom:50,
+  },
+  containerWithoutTabs: {
+    flex: 1,
+    marginTop:60,
+  },
+  tabBar: {
+    borderTopColor: '#dddddd',
+    borderTopWidth: 1 / PixelRatio.get(),
+    backgroundColor: '#262626',
+    opacity: 0.98
+  },
+  navigationBarStyle: {
+    backgroundColor: 'red',
+  },
+  navigationBarTitleStyle: {
+    color:'#ffffff',
+  },
+  image: {
+    marginTop:200,
+    height: 100,
+    borderRadius: 50,
+    width: 100
+  },
+  Avatarcontainer:{
+    ...Platform.select({
+      ios:{
+        flex:1,
+        height:75,
+        width:85,
+      },
+      android:{
+        flex:1,
+        height:75,
+        width:85,
+      }
+    })
+  },
+  icon: {
+       color: '#000',
+       fontSize: 26,
+       borderColor: '#000033',
+       borderWidth: 1,
+       borderRadius: 20,
+       width: 20,
+       height: Platform.OS == 'ios' ? 30 : 40,
+       justifyContent: 'center',
+       alignItems: 'center',
+       textAlign: 'center',
+       paddingTop: Platform.OS == 'ios' ? 10 : 0
+   },
+  map: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  }
+};

@@ -1,13 +1,21 @@
 import React, { Component } from 'react'
-import { View,Text,TextInput,ScrollView,TouchableOpacity,Image,KeyboardAvoidingView, ActivityIndicator } from 'react-native';
-import { Button,FormInput } from 'react-native-elements';
+import { TextInput,ScrollView,Dimensions,TouchableOpacity,Image,KeyboardAvoidingView, ActivityIndicator } from 'react-native';
+import { FormInput } from 'react-native-elements';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Icon from 'react-native-vector-icons/EvilIcons';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-
+import { styles } from '../style/centerstyle';
 import { forget,loadingStarted} from '../actions/ForgetAction';
-
+import {
+  Spinner,
+   Container,
+   Content,
+   Form,
+   Item,
+   Input, Label, Text,
+  View, Button } from 'native-base';
+const window = Dimensions.get('window');
 const mapStateToProps = ({ ForgetReducer }) => {
   return {
     forgetResponse: ForgetReducer.forgetResponse,
@@ -38,52 +46,37 @@ class Forget extends Component{
   }
   render(){
     return(
-      // <KeyboardAwareScrollView ref='scroll' style={{backgroundColor:'red'}}>
-        <Image
-        source={require('./images/login1_bg.png')}
-        style={{flex:1,width:undefined,height:undefined}}>
-        <View style={{flex:1}}>
-          <View style={{flex:0.5,justifyContent:'center',paddingTop:30,paddingLeft:90,paddingRight:90}}>
-            <Image
-            style={{flex:.7,width:undefined,height:undefined,backgroundColor:'#3399ff'}}
-            source={require('./images/Microsoft-Logo-icon-png-Transparent-Background-768x768.png')}>
-            </Image>
-          </View>
-          <View style={{flex:0.5,paddingLeft:30,paddingRight:30,justifyContent:'space-around',}}>
-              <View style={{flex:0.2,borderBottomColor:'#d9d9d9',borderBottomWidth:.5,flexDirection:'row'}}>
-                <View style={{flex:.1,justifyContent:'center',alignItems:'flex-end'}}>
-                  <Icon name="envelope" size={30} color='#d9d9d9' style={{backgroundColor:'transparent'}} />
-                </View>
-                <View style={{flex:.9,justifyContent:'center'}}>
-                  <FormInput
-                  onChangeText={(text) => this.setState({email:text})}
-                  placeholder='E-mail'
-                  placeholderTextColor='#d9d9d9'
-                  style={{color:'#d9d9d9'}}
-                  containerStyle={{borderBottomColor:'transparent'}}
-                  underlineColorAndroid='transparent'
+      <View style={{ flex: 1,height: '100%' }}>
+        <Container style={{ height: '100%' }}>
+          <Content style={{ height: '100%' }}>
+            <View style={{ position: 'absolute', flexDirection: 'column', width: '100%', height: '50%' }}>
+              <View style={{ backgroundColor: '#6945D1', flex: 1}} />
+            </View>
+            <Form style={{ margin: 20, padding: 20, borderColor: "#eeeeee", borderWidth: 1, backgroundColor: '#ffffff' }}>
+              <Item floatingLabel>
+                <Label style={{ color: "#3f51b5" }}>Email</Label>
+                <Input
                   keyboardType='email-address'
-                  />
-                </View>
-              </View>
-              <View style={{flex:0.7,justifyContent:'flex-start'}}>
-                <Button
-                raised
-                buttonStyle={{backgroundColor: '#00cccc', borderRadius:5}}
-                textStyle={{textAlign: 'center',fontWeight:'500'}}
-                title={`Submit`}
-                onPress={()=>this.submit()}
+                  placeholderTextColor = "#aaaaaa"
+                  autoCapitalize = "none"
+                  onChangeText={(text) => this.setState({ email: text })}
                 />
-              </View>
-              <ActivityIndicator
-                size='large'
-                color='#3f51b5' animating={this.props.isLoading}
-                style={{ position:'absolute', alignItems: 'center', alignSelf: 'center' ,marginTop: window.height/2-100, left: window.width/2-35 }}
-              />
-          </View>
-          </View>
-        </Image>
-      // </KeyboardAwareScrollView>
+              </Item>
+              <Button
+                rounded
+                primary
+                style={{marginTop:20,backgroundColor:"#6945D1",alignSelf:'flex-end'}}
+                onPress={() => this.submit()}
+              >
+                <Text > Submit </Text>
+              </Button>
+            </Form>
+          </Content>
+        </Container>
+        <Spinner color='#3f51b5' animating={this.props.isLoading}
+          style={{ alignSelf:'center',position:'absolute', marginTop: window.height/2-100, left: window.width/2-35 }}
+        />
+      </View>
     )
   }
 }

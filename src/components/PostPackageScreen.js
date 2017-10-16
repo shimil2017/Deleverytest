@@ -1,18 +1,29 @@
-import React, { Component } from 'react'
-import { View,Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import React, { Component } from 'react';
+import { View, Text, TouchableOpacity, Dimensions, AsyncStorage, ActivityIndicator } from 'react-native';
+import { Actions } from 'react-native-router-flux';
+import { addTravelPlan, loadingAddPackageStarted } from '../actions/AddPackageActions';
+import { bindActionCreators } from 'redux';
+import { Button } from 'react-native-elements';
+import { connect } from 'react-redux';
 import MapView from 'react-native-maps';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Button } from 'react-native-elements';
 const window = Dimensions.get('window');
 import Geocoder from 'react-native-geocoding';
-import { Actions } from 'react-native-router-flux';
-export default class PostPackageScreen extends Component{
+
+const mapStateToProps = ({ AddPackageReducer }) => {
+  return {
+    addTravelPlanResponse: AddPackageReducer.addTravelPlanResponse,
+    isLoading: AddPackageReducer.isLoading,
+  };
+};
+const mapDispatchToProps = dispatch => {
+  return bindActionCreators({ addTravelPlan, loadingAddPackageStarted }, dispatch)
+
+}
+ class PostPackageScreen extends Component{
   constructor(props) {
     super(props);
-
-    this.state = {
-        region: {
-        latitude: 37.78825,
+    this.state = { region: { latitude: 37.78825,
         longitude: -122.4324,
         latitudeDelta: 0.0922,
         longitudeDelta: 0.0421,
@@ -28,18 +39,17 @@ export default class PostPackageScreen extends Component{
         endAddress:'',
         loading:false,
         showContinueButton: false,
-
     };
     //AIzaSyBgykJIQqrUq9XOgs4G8YL5DuSGrE_oPZs
     Geocoder.setApiKey('AIzaSyBgykJIQqrUq9XOgs4G8YL5DuSGrE_oPZs');
   }
-  onClickSource(){
-    this.setState({isSource:true,isDestination:false, showButton:true, showContinueButton:false });
+  onClickSource() {
+    this.setState({startAddress:'',isSource:true,isDestination:false, showButton:true, showContinueButton:false });
   }
-  onClickDestination(){
-    this.setState({isSource:false,isDestination:true, showButton:true, showContinueButton:false });
+  onClickDestination() {
+    this.setState({endAddress:'',isSource:false,isDestination:true, showButton:true, showContinueButton:false });
   }
-  onClickSubmit(){
+  onClickSubmit() {
     if (this.state.isSource == true) {
         this.setState({ originLatitude:this.state.region.latitude,originLongitude:this.state.region.longitude });
         this.setState({isSource: true, isDestination: true, showButton:false,loading: true});
@@ -90,6 +100,31 @@ export default class PostPackageScreen extends Component{
         );
     }
   }
+  onPostTravelPlanClick(){
+    try {
+
+      const value = AsyncStorage.getItem('user_id',(err, result) => {
+        this.props.loadingAddPackageStarted();
+          const requestJSON = {
+              source:this.state.startAddress,
+              destination:this.state.endAddress,
+              startDate:this.props.startDate,
+              endDate:this.props.endDate,
+              user_id: result,
+              budget:this.props.budget,
+              source_lat:this.state.originLatitude,
+              source_long:this.state.originLongitude,
+              destination_lat:this.state.destinationLatitude,
+              destination_long:this.state.destinationLongitude,
+          }
+          console.log(JSON.stringify(requestJSON));
+          this.props.addTravelPlan(JSON.stringify(requestJSON));
+        });
+    } catch (error) {
+      // Error retrieving data
+      console.log("Error getting Token",error);
+    }
+  }
   render() {
     var _this=this;
   return (
@@ -102,7 +137,8 @@ export default class PostPackageScreen extends Component{
 
      <MapView
        ref={ref => { this.map = ref; }}
-
+       loadingEnabled={true}
+       loadingIndicatorColor='red'
        fitToElements={true}
        style={{
               position: 'absolute',
@@ -148,73 +184,111 @@ export default class PostPackageScreen extends Component{
             null
         }
         </MapView>
-        <View style={{flexDirection:'column'}}>
-          <Text style={{padding:10,backgroundColor:'#fff'}}>Locations</Text>
-          {
-            (this.state.isSource ===  true )?
-            <View style={{flexDirection:'row',padding:10,width:window.width, backgroundColor:'#fff',margin:10 }}>
-              <Icon name="location-on" size={25} color='green' style={{backgroundColor:'transparent'}} />
-              <TouchableOpacity onPress={()=> this.onClickSource()}>
+        <View style={(this.state.showContinueButton === true)?{flex:1}:{flex:null}}>
+          <View style={(this.state.showContinueButton === true)?{flex:.9}:{flex:null}}>
+            {
+              (this.state.isSource ===  true )?
+              <View style={{flexDirection:'row',padding:8,width:window.width, backgroundColor:'#fff',margin:5 }}>
+                <Icon name="location-on" size={25} color='green' style={{backgroundColor:'transparent'}} />
+                <TouchableOpacity onPress={()=> this.onClickSource()}>
+                  {
+                    (this.state.startAddress === '')?
+                    <Text style={{width:300}}> Select start Point</Text>
+                      :
+                    <Text style={{width:300}}>{this.state.startAddress}</Text>
+                  }
+                </TouchableOpacity>
                 {
-                  (this.state.startAddress === '')?
-                  <Text > Start Point</Text>
+                  (this.state.startAddress !== '')?
+                    <Icon onPress={()=> this.onClickSource()} name="create" size={25} color='grey' style={{alignSelf:"flex-end",backgroundColor:'transparent'}} />
                     :
-                  <Text >{this.state.startAddress}</Text>
+                    null
                 }
-              </TouchableOpacity>
-            </View>
-            :
-            <View></View>
-          }
-          {
-            (this.state.isDestination === true)?
-            <View style={{flexDirection:'row',padding:10,width:window.width, backgroundColor:'#fff',margin:10 }}>
-              <Icon name="location-on" size={25} color='red' style={{backgroundColor:'transparent'}} />
-              <TouchableOpacity onPress={()=> this.onClickDestination()}>
+
+              </View>
+              :
+              <View></View>
+            }
+            {
+              (this.state.isDestination === true)?
+              <View style={{flexDirection:'row',padding:8,width:window.width, backgroundColor:'#fff',margin:5 }}>
+                <Icon name="location-on" size={25} color='red' style={{backgroundColor:'transparent'}} />
+                <TouchableOpacity onPress={()=> this.onClickDestination()}>
+                  {
+                    (this.state.endAddress === '')?
+                    <Text style={{width:300}}>Select End Point</Text>
+                    :
+                    <Text style={{width:300}}>{this.state.endAddress}</Text>
+                  }
+                </TouchableOpacity>
                 {
-                  (this.state.endAddress === '')?
-                  <Text > End Point</Text>
-                  :
-                  <Text >{this.state.endAddress}</Text>
+                  (this.state.endAddress !== '')?
+                    <Icon onPress={()=> this.onClickDestination()} name="create" size={25} color='grey' style={{alignSelf:"flex-end",backgroundColor:'transparent'}} />
+                    :
+                    null
                 }
-              </TouchableOpacity>
-            </View>
-            :
-            <View></View>
-          }
-          {
-            (this.state.showButton === true)?
+              </View>
+              :
+              <View></View>
+            }
+          </View>
+          <View style={(this.state.showContinueButton === true)?{flex:.1}:{flex:null}}>
+              {
+                (this.state.showButton === true)?
+
+                  <Button
+                    style={{alignSelf:'flex-end',justifyContent:'flex-end'}}
+                    onPress={()=> this.onClickSubmit()}
+                    raised
+                    buttonStyle={{backgroundColor: '#00cccc', borderRadius:5}}
+                    textStyle={{textAlign: 'center',fontWeight:'500'}}
+                    title={`Select this location`}
+                  />
+                :
+                  <View></View>
+              }
+
+              {
+                (this.state.showContinueButton === true && this.props.isTravelPlan == null)?
+                <Button
+                  onPress={()=> Actions.ParcelDetail({ originLatitude: this.state.originLatitude,
+                  originLongitude: this.state.originLongitude,
+                  destinationLatitude: this.state.destinationLatitude,
+                  destinationLongitude: this.state.destinationLongitude,
+                  startAddress: this.state.startAddress,
+                  endAddress: this.state.endAddress })}
+                  raised
+                  buttonStyle={{backgroundColor: '#00cccc', borderRadius:5}}
+                  textStyle={{textAlign: 'center',fontWeight:'500'}}
+                  title={`Continue`}
+                />
+                :
+                null
+            }
+            {
+              (this.props.isTravelPlan !=null && this.props.isTravelPlan === true && this.state.showContinueButton === true )?
               <Button
-                style={{alignSelf:'flex-end'}}
-                onPress={()=> this.onClickSubmit()}
+                onPress={()=> this.onPostTravelPlanClick()}
                 raised
                 buttonStyle={{backgroundColor: '#00cccc', borderRadius:5}}
                 textStyle={{textAlign: 'center',fontWeight:'500'}}
-                title={`Select this location`}
+                title={`Submit Travel Plan`}
               />
-            :
-              <View></View>
-          }
-
-          {
-            (this.state.showContinueButton === true)?
-            <Button
-              onPress={()=> Actions.ParcelDetail({ originLatitude: this.state.originLatitude,
-              originLongitude: this.state.originLongitude,
-              destinationLatitude: this.state.destinationLatitude,
-              destinationLongitude: this.state.destinationLongitude,
-              startAddress: this.state.startAddress,
-              endAddress: this.state.endAddress })}
-              raised
-              buttonStyle={{backgroundColor: '#00cccc', borderRadius:5}}
-              textStyle={{textAlign: 'center',fontWeight:'500'}}
-              title={`Continue`}
+              :
+              null
+            }
+          </View>
+          <View style={{flex:1,marginTop:window.height/2-30,marginLeft:window.width/2-35,position:'absolute'}} >
+            <ActivityIndicator
+              size='large'
+              color='#3f51b5'
+              animating={this.props.isLoading}
+              style={{alignItems: 'center', alignSelf: 'center' }}
             />
-            :
-            null
-         }
+          </View>
          </View>
     </View>
   );
 }
 }
+export default connect(mapStateToProps, mapDispatchToProps )(PostPackageScreen)

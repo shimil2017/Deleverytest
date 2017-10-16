@@ -1,11 +1,11 @@
+import { SIGN_UP } from '../constant/index';
 import { Actions } from 'react-native-router-flux';
 export const SIGN_UP_SUCCESS = 'signup_success';
 export const SIGN_UP_FAIL = ' signup_fail';
-export const LOADING_STARTED = 'loading_started';
-import { SIGN_UP } from '../constant/index';
+export const LOADING_STARTED = 'loading_sign_up';
 /* eslint no-undef: "error"*/
 /* eslint-env browser*/
-export const signUp = (email, password, gender, firstName, lastName, phoneNo) => {
+export const signUp = (email, password, gender, firstName, lastName, phoneNo, image) => {
   return function (dispatch) {
     var data = {
         "first_name":firstName,
@@ -14,6 +14,7 @@ export const signUp = (email, password, gender, firstName, lastName, phoneNo) =>
          "password":password,
          "gender":gender,
          "phone_no":phoneNo,
+         "image": image,
        }
     var request = {
       headers: {
@@ -22,7 +23,7 @@ export const signUp = (email, password, gender, firstName, lastName, phoneNo) =>
       method: 'POST',
       body: JSON.stringify(data)
     };
-    console.log('Request',JSON.stringify(data));
+    console.log('Request',SIGN_UP,JSON.stringify(data));
     fetch(SIGN_UP, request)
       .then(function (response) {
         console.log(response);
@@ -40,7 +41,6 @@ export const signUp = (email, password, gender, firstName, lastName, phoneNo) =>
             payload: responseJson,
           });
         }
-
       })
       .catch((error) => {
         console.log(error);

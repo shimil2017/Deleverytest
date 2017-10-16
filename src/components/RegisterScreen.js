@@ -1,16 +1,24 @@
 import React, { Component } from 'react'
-import { View,Text,TextInput,ScrollView,TouchableOpacity,Image,KeyboardAvoidingView,ActivityIndicator, ImageBackground, Dimensions } from 'react-native';
-import { Button,FormInput } from 'react-native-elements';
+import { View, TouchableOpacity, Image, ActivityIndicator, StyleSheet, PixelRatio, Dimensions } from 'react-native';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
+import RadioForm, { RadioButton, RadioButtonInput, RadioButtonLabel } from 'react-native-simple-radio-button';
+import { Container, Content, Form, Item, Input, Button, Text } from 'native-base';
 const window = Dimensions.get('window');
 import { signUp, loadingStarted } from '../actions/SignUpActions';
+var ImagePicker = require('react-native-image-picker');
 var radio_props = [
-  {label: 'Male ', value: 'male' },
-  {label: 'Female', value: 'female' }
+  { label: 'Male ', value: 'male' },
+  { label: 'Female', value: 'female' }
 ];
+var options = {
+  title: 'Select Avatar',
+  storageOptions: {
+    skipBackup: true,
+    path: 'images'
+  }
+};
 const mapStateToProps = ({ SignUpReducer }) => {
 
   return {
@@ -19,20 +27,21 @@ const mapStateToProps = ({ SignUpReducer }) => {
   };
 };
 const mapDispatchToProps = dispatch => {
-  return bindActionCreators({ signUp,loadingStarted }, dispatch)
-
+  return bindActionCreators({ signUp, loadingStarted }, dispatch)
 };
 class SignUpPage extends Component{
   constructor(props){
     super(props)
-    this.state={
+    this.state = {
       email: '',
       password: '',
       fname:'',
       lname:'',
       confirmPassword:'',
       gender:'',
-      phone:''
+      phone:'',
+      base64:'',
+      avatarSource:null,
     }
   }
   submit(){
@@ -55,142 +64,181 @@ class SignUpPage extends Component{
     else
     {
       this.props.loadingStarted();
-      this.props.signUp(this.state.email, this.state.password,this.state.gender, this.state.fname, this.state.lname, this.state.phone);
+      this.props.signUp(this.state.email, this.state.password,this.state.gender, this.state.fname, this.state.lname, this.state.phone, this.state.base64);
   }
+}
+selectPhotoTapped() {
+  ImagePicker.showImagePicker(options, (response) => {
+    console.log('Response = ', response);
+
+    if (response.didCancel) {
+      console.log('User cancelled photo picker');
+    }
+    else if (response.error) {
+      console.log('ImagePicker Error: ', response.error);
+    }
+    else {
+      let source = { uri: response.uri };
+
+      // You can also display the image using data:
+       let base64Strng = { uri: 'data:image/jpeg;base64,' + response.data };
+       console.log("base64--",base64Strng.uri);
+       this.setState({ base64:base64Strng.uri })
+
+      this.setState({
+        avatarSource: source
+      });
+    }
+  });
 }
   render(){
     return(
-        <ImageBackground
-        source={require('./images/login1_bg.png')}
-        style={{flex:1,width:undefined,height:undefined}}>
-        <ScrollView>
-          <View >
-          </View>
-          <View style={{marginTop:20,paddingLeft:30,paddingRight:30,justifyContent:'space-around'}}>
-              <View style={{marginTop:20,borderBottomColor:'#d9d9d9',borderBottomWidth:.5,flexDirection:'row'}}>
-                  <View style={{justifyContent:'center',alignItems:'flex-end'}}>
-                    <Icon name="account-circle" size={30} color='#d9d9d9' style={{backgroundColor:'transparent'}} />
-                  </View>
-                  <View style={{justifyContent:'center'}}>
-                    <FormInput
-                    onChangeText={(text) => this.setState({fname:text})}
-                    placeholder='First name'
-                    placeholderTextColor='#d9d9d9'
-                    style={{color:'#d9d9d9',width:window.width-40}}
-                    containerStyle={{borderBottomColor:'transparent'}}
-                    underlineColorAndroid='transparent'
-                    />
-                  </View>
-              </View>
-              <View style={{marginTop:20,borderBottomColor:'#d9d9d9',borderBottomWidth:.5,flexDirection:'row'}}>
-                  <View style={{justifyContent:'center',alignItems:'flex-end'}}>
-                    <Icon name="account-circle" size={30} color='#d9d9d9' style={{backgroundColor:'transparent'}} />
-                  </View>
-                  <View style={{justifyContent:'center'}}>
-                    <FormInput
-                    onChangeText={(text) => this.setState({lname:text})}
-                    placeholder='Last name'
-                    placeholderTextColor='#d9d9d9'
-                    style={{color:'#d9d9d9',width:window.width-40}}
-                    containerStyle={{borderBottomColor:'transparent'}}
-                    underlineColorAndroid='transparent'
-                    />
-                  </View>
-              </View>
-              <View style={{marginTop:20,borderBottomColor:'#d9d9d9',borderBottomWidth:.5,flexDirection:'row'}}>
-                <View style={{justifyContent:'center',alignItems:'flex-end'}}>
-                  <Icon name="email" size={30} color='#d9d9d9' style={{backgroundColor:'transparent'}} />
+      <View style={{ flex: 1, height: window.height }}>
+        <Container >
+          <Content >
+            <View style={{ position: 'absolute', flexDirection: 'column', width: window.width, height: window.height/2 }}>
+              <View style={{ backgroundColor: '#3f51b5', flex: 1 }} />
+            </View>
+            <Form style={{  padding: 20, borderColor: "#eeeeee", borderWidth: 1, backgroundColor: '#ffffff' }}>
+
+          <View style={{marginTop:20,padding:10,justifyContent:'center'}}>
+            <TouchableOpacity onPress={this.selectPhotoTapped.bind(this)} style={[styles.avatar, {alignItems:'center'}]}>
+                <View style={[styles.avatar, styles.avatarContainer, {alignItems:'center',backgroundColor:'white'}]}>
+
+                { this.state.avatarSource === null ? <Icon name="person-add" size={45} color='#6945D1'/> :
+                    <Image style={styles.avatar} source={this.state.avatarSource} />
+                }
                 </View>
-                <View style={{justifyContent:'center'}}>
-                  <FormInput
-                  onChangeText={(text) => this.setState({email:text})}
-                  placeholder='E-mail'
-                  placeholderTextColor='#d9d9d9'
-                  style={{color:'#d9d9d9',width:window.width-40}}
-                  containerStyle={{borderBottomColor:'transparent'}}
-                  underlineColorAndroid='transparent'
+            </TouchableOpacity>
+                <Item >
+                  <Icon name="person" size={25} color='black'/>
+                  <Input
+                    placeholder='First Name'
+                    placeholderTextColor = "#aaaaaa"
+                    onChangeText={(text) => this.setState({ fname: text })}
                   />
-                </View>
-              </View>
-              <View style={{marginTop:20,borderBottomColor:'#d9d9d9',borderBottomWidth:.5,flexDirection:'row'}}>
-                <View style={{justifyContent:'center',alignItems:'flex-end'}}>
-                  <Icon name="phone" size={30} color='#d9d9d9' style={{backgroundColor:'transparent'}} />
-                </View>
-                <View style={{justifyContent:'center'}}>
-                  <FormInput
-                  onChangeText={(text) => this.setState({phone:text})}
-                  placeholder='Phone'
-                  placeholderTextColor='#d9d9d9'
-                  style={{color:'#d9d9d9',width:window.width-40}}
-                  containerStyle={{borderBottomColor:'transparent'}}
-                  underlineColorAndroid='transparent'
+                </Item>
+                <Item >
+                  <Icon name="person" size={25} color='black'/>
+                  <Input
+                    placeholder='Last Name'
+                    placeholderTextColor = "#aaaaaa"
+                    onChangeText={(text) => this.setState({ lname: text })}
                   />
-                </View>
-              </View>
-              <View style={{marginTop:20,borderBottomColor:'#d9d9d9',borderBottomWidth:.5,flexDirection:'row'}}>
-                <View style={{justifyContent:'center',alignItems:'flex-end'}}>
-                  <Icon name="lock" size={30} color='#d9d9d9' style={{backgroundColor:'transparent'}} />
-                </View>
-                <View style={{justifyContent:'center'}}>
-                  <FormInput
-                  onChangeText={(text) => this.setState({password:text})}
-                  placeholder='Password'
-                  placeholderTextColor='#d9d9d9'
-                  style={{color:'#d9d9d9',width:window.width-40}}
-                  secureTextEntry={true}
-                  containerStyle={{borderBottomColor:'transparent'}}
-                  underlineColorAndroid='transparent'
+                </Item>
+                <Item >
+                  <Icon name="email" size={25} color='black'/>
+                  <Input
+                    placeholder='Email'
+                    keyboardType='email-address'
+                    placeholderTextColor = "#aaaaaa"
+                    autoCapitalize = "none"
+                    onChangeText={(text) => this.setState({ email: text })}
                   />
-                </View>
-              </View>
-              <View style={{marginTop:20,borderBottomColor:'#d9d9d9',borderBottomWidth:.5,flexDirection:'row'}}>
-                  <View style={{justifyContent:'center',alignItems:'flex-end'}}>
-                    <Icon name="lock" size={30} color='#d9d9d9' style={{backgroundColor:'transparent'}} />
-                  </View>
-                  <View style={{justifyContent:'center'}}>
-                    <FormInput
-                    onChangeText={(text) => this.setState({confirmPassword:text})}
+                </Item>
+                <Item >
+                  <Icon name="phone" size={25} color='black'/>
+                  <Input
+                    placeholder="Phone"
+                    keyboardType='phone-pad'
+                    placeholderTextColor = "#aaaaaa"
+                    autoCapitalize = "none"
+                    onChangeText={(text) => this.setState({ phone: text })}
+                  />
+                </Item>
+                <Item >
+                  <Icon name="lock" size={25} color='black'/>
+                  <Input
+                    placeholder='Password'
+                    placeholderTextColor = "#aaaaaa"
+                    autoCapitalize = "none"
+                    secureTextEntry = {true}
+                    onChangeText={(text) => this.setState({ password: text })}
+                  />
+                </Item>
+                <Item >
+                  <Icon name="lock" size={25} color='black'/>
+                  <Input
                     placeholder='Confirm Password'
-                    placeholderTextColor='#d9d9d9'
-                    style={{color:'#d9d9d9',width:window.width-40}}
-                    secureTextEntry={true}
-                    containerStyle={{borderBottomColor:'transparent'}}
-                    underlineColorAndroid='red'
-                    />
-                  </View>
-              </View>
+                    placeholderTextColor = "#aaaaaa"
+                    autoCapitalize = "none"
+                    secureTextEntry = {true}
+                    onChangeText={(text) => this.setState({ confirmPassword: text })}
+                  />
+                </Item>
               <View style={{marginTop:20,alignItems:'flex-start'}}>
                 <RadioForm
                   radio_props={radio_props}
                   initial={0}
-
                   onPress={(value) => {this.setState({gender:value})}}
                   formHorizontal={true}
-                  buttonColor={'#00cccc'}
-                  labelColor={'#d9d9d9'}
+                  buttonColor={'#6945D1'}
+                  labelColor={'#6945D1'}
                   style={{backgroundColor:'transparent'}}
                 />
               </View>
           </View>
-          <View style={{paddingTop:20,paddingLeft:10,paddingRight:10}}>
-              <View style={{justifyContent:'center'}}>
+              <View style={{justifyContent:'center',alignItems:'center'}}>
                 <Button
-                raised
-                buttonStyle={{backgroundColor: '#00cccc', borderRadius:5}}
-                textStyle={{textAlign: 'center',fontWeight:'500'}}
-                title={`Submit`}
-                onPress={()=>this.submit()}
-                />
+                  rounded
+                  primary
+                  style={{
+                    backgroundColor: '#6945D1',
+                    flex:1,
+                    justifyContent: 'center',
+                    alignItems:"center",
+                    alignSelf:"center",
+                    width:300,
+                    marginTop:10}}
+                  onPress={() => this.submit()}
+                >
+                <Text > Submit </Text>
+              </Button>
               </View>
+          </Form>
+        </Content>
+      </Container>
               <ActivityIndicator
                 size='large'
                 color='#3f51b5' animating={this.props.loading}
                 style={{ position:'absolute', alignItems: 'center', alignSelf: 'center' ,marginTop: window.height/2-100, left: window.width/2-35 }}
               />
+
           </View>
-          </ScrollView>
-        </ImageBackground>
     )
   }
 }
+const styles = StyleSheet.create({
+    container : {
+      flex: 1,
+      backgroundColor: 'lightgrey',
+    },
+    avatarContainer: {
+      borderColor: '#3f51b5',
+      borderWidth: 1 / PixelRatio.get(),
+      justifyContent: 'center',
+      alignItems: 'center'
+    },
+    avatar: {
+      alignSelf:'center',
+      borderRadius: 75,
+      width: 100,
+      height: 100,
+    },
+    row:{
+        flexDirection:'row',
+        flex:0.3333333333333
+    },
+    submitButton: {
+      width: window.width/2,
+      backgroundColor: '#3f51b5',
+      marginTop: 15,
+      height: 40,
+      flex:1,
+      borderRadius: 0,
+      justifyContent: 'center',
+      alignItems:"center",
+      alignSelf:"center"
+    },
+  });
 export default connect(mapStateToProps,mapDispatchToProps )(SignUpPage);
