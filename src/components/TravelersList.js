@@ -66,7 +66,7 @@ class TravelersList extends Component {
         />
       )
     }
-    if (this.props.travelersListResponse.data === null || this.props.travelersListResponse.data.length ===0) {
+    if (this.props.travelersListResponse.data === undefined || this.props.travelersListResponse.data === null || this.props.travelersListResponse.data.length ===0) {
       return(
         <Text> There is no Traveler arround right now!</Text>
       )
@@ -79,10 +79,10 @@ class TravelersList extends Component {
             renderItem={({item}) =>
             <TouchableOpacity onPress={()=> Actions.TravelDealScreen({
               item: item,package_id:this.props.package_id, traveller_plan_id: item._id,
-              is_req_to_traveller:true,is_req_to_package:false
+              is_req_to_traveller:true,is_req_to_package:false, via: 1
             })}>
              <Card style={{flex:.4,borderRadius:10,marginBottom:7,backgroundColor:"white",borderWidth:1.5,borderColor:'#CCD1D1'}}>
-               <View style={{flex:.50,flexDirection:'row'}}>
+               <View style={{flex:.50,flexDirection:'row'}} >
 
                    <View style={{flex:.3,justifyContent:'center',alignItems:'center'}}>
                      <Spinner

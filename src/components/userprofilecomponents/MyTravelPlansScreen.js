@@ -4,7 +4,7 @@ import { Button, FormInput } from 'react-native-elements';
 import { List, ListItem, Card, Spinner, Thumbnail  } from 'native-base';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { getMyTravelPlanList, myPlanStartLoading } from '../../actions/MyTravelPlansListActions';
+import { getMyTravelPlanList, myPlanStartLoading, pullToRefreshTravelerList } from '../../actions/MyTravelPlansListActions';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Actions } from 'react-native-router-flux';
 const mapStateToProps = ({ MyTravelPlanListReducer, LoginReducer, SignUpReducer  }) => {
@@ -14,10 +14,11 @@ const mapStateToProps = ({ MyTravelPlanListReducer, LoginReducer, SignUpReducer 
     loading: MyTravelPlanListReducer.isLoading,
     isRegistered: SignUpReducer.isRegistered,
     loggedIn: LoginReducer.loggedIn,
+    pullToRefreshTravelers: MyTravelPlanListReducer.pullToRefreshTravelers
   };
 };
 const mapDispatchToProps = dispatch => {
-  return bindActionCreators({ getMyTravelPlanList, myPlanStartLoading }, dispatch);
+  return bindActionCreators({ getMyTravelPlanList, myPlanStartLoading, pullToRefreshTravelerList }, dispatch);
 
 };
 class MyTravelPlansScreen extends Component {
@@ -55,7 +56,7 @@ class MyTravelPlansScreen extends Component {
     }
 
   }
-  componentWillReceiveProps(nextProps){
+  componentWillReceiveProps(nextProps) {
     if ((nextProps.isRegistered !== this.props.isRegistered && nextProps.isRegistered ===true)
         ||(nextProps.loggedIn !== this.props.loggedIn && nextProps.loggedIn ===true)
   ) {
@@ -71,9 +72,22 @@ class MyTravelPlansScreen extends Component {
       }
     }
   }
+  _onRefresh() {
+    //this.setState({refreshing: true});
+    this.props.pullToRefreshTravelerList();
+    try {
+      const value = AsyncStorage.getItem('user_id',(err, result) => {
+        this.props.myPlanStartLoading();
+        this.props.getMyTravelPlanList(result);
+        });
+    } catch (error) {
+      // Error retrieving data
+      console.log("Error getting Token",error);
+    }
+  }
   onRowClick(item){
     if (item.deals.length > 0) {
-      Actions.MyPlansRequest({ data: item.deals });
+      Actions.MyPlansRequest({ data: item.deals, travellerDetails: item });
     }else {
       alert('No Requests received on your package till now.')
     }
@@ -111,10 +125,16 @@ class MyTravelPlansScreen extends Component {
     }
     return (
         <FlatList
+          refreshControl={
+            <RefreshControl
+              refreshing={this.props.pullToRefreshTravelers}
+              onRefresh={this._onRefresh.bind(this)}
+            />
+          }
           keyExtractor={this._keyExtractor}
           data={this.props.travelersListResponse.data}
           renderItem={({item}) =>
-          <TouchableOpacity onPress={()=> alert('under development')}>
+          <TouchableOpacity onPress={()=> this.onRowClick(item)}>
            <Card style={{flex:.4,borderRadius:10,marginBottom:7,backgroundColor:"white",borderWidth:1.5,borderColor:'#CCD1D1'}}>
              <View style={{flex:.50,flexDirection:'row'}}>
 
@@ -124,7 +144,7 @@ class MyTravelPlansScreen extends Component {
                      animating={true}
                      style={{alignSelf: "center", alignItems: "center",position: 'absolute', }} />
                    {
-                     (item.image !== '' )?
+                     (item.image!==undefined&&item.image !== '' )?
                      <Thumbnail
                        onLoadEnd={() => this.setState({isImageLoading:false})}
                        onLoadStart={()=> this.setState({isImageLoading:true})}
@@ -189,6 +209,15 @@ class MyTravelPlansScreen extends Component {
                    <TouchableOpacity>
                    <Icon name="keyboard-arrow-right" size={40} color='#6945D1' style={{backgroundColor:'transparent'}} />
                   </TouchableOpacity>
+                  {
+                    (item.deals.length ===0)?
+                    <TouchableOpacity onPress={() => Actions.TravelPlanScreen({item1:item})} style={{ flex: 0.12, backgroundColor: 'transparent' }}>
+                      <Icon name='create' color='#6945D1' size={30} style={{  backgroundColor: 'transparent' }}/>
+                    </TouchableOpacity>
+                    :
+                    null
+                  }
+
                </View>
              </View>
           </Card>

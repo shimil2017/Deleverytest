@@ -6,6 +6,7 @@ const INITIAL_STATE = { addDealResponse: {}, isLoading: false };
 export default function (state = INITIAL_STATE, action) {
   switch (action.type) {
     case TRAVELE_DEAL_SUCCESS:
+
       Actions.pop();
       alert(action.payload.message);
       return { ...state, isLoading: false, addDealResponse: action.payload };

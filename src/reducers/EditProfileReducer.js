@@ -9,11 +9,9 @@ export default (state = INITIAL_STATE, action) => {
     case EDIT_PROFILE_SUCCESS:
       try {
         console.log(action.payload);
-        AsyncStorage.setItem('user_id', action.payload.data.id);
-        Actions.pop();
       } catch (error) {
         // Error saving data
-        console.log('Saving user_id Error', error);
+        console.log('EDITSaving user_id Error', error);
       }
       return { ...state,
         registerResponse: action.payload.data,

@@ -11,9 +11,9 @@ export const getPackagesList = (email, password, loginType) => {
       headers: {
         'Content-Type': 'application/json'
       },
-      method: 'GET',
+      method: 'POST',
     };
-    console.log('Request',GET_PACKAGES_LIST,request);
+    console.log('Request', GET_PACKAGES_LIST, request);
     fetch(GET_PACKAGES_LIST, request)
       .then(function (response) {
         console.log(response);
@@ -23,7 +23,7 @@ export const getPackagesList = (email, password, loginType) => {
         return response.json();
       })
       .then((responseJson) => {
-        if (responseJson.messageId != 200) {
+        if (responseJson.messageId !== 200) {
           throw new Error(responseJson.message);
         } else {
           dispatch({
@@ -41,10 +41,10 @@ export const getPackagesList = (email, password, loginType) => {
       });
   };
 };
-export const getPackagesListExplore = (user_id) => {
+export const getPackagesListExplore = (user_id,km,lat,lng) => {
   return function (dispatch) {
     var data = {
-      "user_id": user_id,
+       "user_id": user_id,"km":km,"long":lng,"lat":lat
     };
     var request = {
       headers: {

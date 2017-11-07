@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "710157767128",
+    "firebase_url": "https://packagedeliveryapp-6db1e.firebaseio.com",
+    "project_id": "packagedeliveryapp-6db1e",
+    "storage_bucket": "packagedeliveryapp-6db1e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:710157767128:android:a8055029919290c4",
+        "android_client_info": {
+          "package_name": "com.packagedeliveryapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "710157767128-p5638g3vah6b4csg8kfo4c7j5eai4spa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDbuq_L2gREJDogJpAKw8HyrWSfT69PCx0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

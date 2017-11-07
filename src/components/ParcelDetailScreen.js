@@ -3,7 +3,8 @@ import { Button,FormInput } from 'react-native-elements';
 var ImagePicker = require('react-native-image-picker');
 import {ScrollView,View,TouchableOpacity,Text,Image,StyleSheet,PixelRatio, ActivityIndicator, Dimensions, AsyncStorage, Modal} from 'react-native';
 import { Container, Content, Form, Item, Input, Label, Spinner, } from 'native-base';
-import { addPackage, loadingAddPackageStarted } from '../actions/AddPackageActions';
+import { addPackage, loadingAddPackageStarted, editPackage } from '../actions/AddPackageActions';
+import { getMyPackagesList, myPackageStartLoading , } from '../actions/MyPackagesListActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Dropdown } from 'react-native-material-dropdown';
@@ -21,8 +22,8 @@ const options = {
   }
 };
 const radioProps = [
-  { label: '  Pickup package from Source Location  ', value: 'pickup' },
-  { label: "  Deliver Packge to  Traveler's   Location", value: 'delivery' }
+  { label: 'Pickup package from Source Location', value: 'pickup' },
+  { label: "Deliver packge to Traveler's Location  ", value: 'delivery' }
 ];
 const mapStateToProps = ({ AddPackageReducer, PickUpReducer }) => {
   return {
@@ -32,7 +33,7 @@ const mapStateToProps = ({ AddPackageReducer, PickUpReducer }) => {
   };
 };
 const mapDispatchToProps = dispatch => {
-  return bindActionCreators({ addPackage, loadingAddPackageStarted }, dispatch)
+  return bindActionCreators({ addPackage, loadingAddPackageStarted,getMyPackagesList, myPackageStartLoading, editPackage }, dispatch)
 }
 class ParcelDetailScreen extends Component {
   constructor(props) {
@@ -47,24 +48,49 @@ class ParcelDetailScreen extends Component {
       height: 0,
       quantity: 0,
       price: 0,
+      budget: 0,
       avatarSource: null,
       base64: '',
       title: '',
-      lenghtM: 'CM',
-      widthM: 'CM',
-      heightM: 'CM',
-      weightM: 'KG',
+      lenghtM: 'cm',
+      widthM: 'cm',
+      heightM: 'cm',
+      weightM: 'kg',
     };
+  }
+  componentDidMount() {
+    console.log("loc",this.props.item);
+    if(this.props.item){
+      this.setState({title:this.props.item.package_name,length:this.props.item.length, width: this.props.item.width, height: this.props.item.height, description: this.props.item.description, quantity: this.props.item.quantity, price: this.props.item.budget, weight:this.props.item.weight },()=>console.log(this.state.quantity))
+
+      this.setState({ budget: this.props.item.budget }, ()=> console.log("sssghsghgs",this.state.budget));
+
+      //  alert(this.props.item.quantity+"--"+this.props.item.budget+"--"+this.state.budget);
+    }
   }
   componentWillReceiveProps(nextProps) {
     if (nextProps.pickupAddress !== this.props.pickupAddress) {
       this.setState({ pickupAddress: nextProps.pickupAddress }, () => console.log("Updated Address",this.state.pickupAddress))
     }
   }
+  componentWillUnmount() {
+    try {
+      const value = AsyncStorage.getItem('user_id',(err, result) => {
+        if (result !== undefined && result !== null && result !== '') {
+          this.props.myPackageStartLoading();
+          this.props.getMyPackagesList(result);
+        }
+        });
+    } catch (error) {
+      // Error retrieving data
+      console.log("Error getting Token",error);
+    }
+  }
   onRadioClick(data) {
     this.setState({ radioSelected: data }, () => console.log(this.state.radioSelected));
     if (data === 'pickup') {
-      Actions.PickupLocationScreen();
+      //Actions.PickupLocationScreen();
+      alert("under developement");
     } else {
       this.setState({ pickupAddress: null }, () => console.log('Removed Pickup'));
     }
@@ -129,7 +155,7 @@ class ParcelDetailScreen extends Component {
                 const requestJSON = {
                     image: this.state.base64,
                     package_name: this.state.title,
-                    weight: this.state.weight,
+                    weight: this.state.weight+' '+ this.state.weightM,
                     source: this.props.startAddress,
                     destination: this.props.endAddress,
                     startDate: "2016-05-18T16:00:00Z",
@@ -147,12 +173,19 @@ class ParcelDetailScreen extends Component {
                     pick_lat: this.state.pickupAddress.pick_up_lat,
                     pick_long: this.state.pickupAddress.pick_up_lng,
                     pick_address: this.state.pickupAddress.pick_up_location,
-                    height: this.state.height,
-                    width: this.state.width,
-                    length: this.state.length,
+                    height: this.state.height+' '+ this.state.heightM,
+                    width: this.state.width+' '+this.state.widthM,
+                    length: this.state.length+' '+this.state.lenghtM,
+                    rating: 5
                 };
                 console.log(JSON.stringify(requestJSON));
-                this.props.addPackage(JSON.stringify(requestJSON));
+                console.log("ITEMSSS",this.props.item);
+                if (this.props.item) {
+                  this.props.editPackage(JSON.stringify(requestJSON), this.props.item._id);
+                }else {
+                  this.props.addPackage(JSON.stringify(requestJSON));
+                }
+
             }
           });
         }else {
@@ -168,7 +201,7 @@ class ParcelDetailScreen extends Component {
                   const requestJSON = {
                       image: this.state.base64,
                       package_name:this.state.title,
-                      weight:this.state.weight,
+                      weight: this.state.weight+' '+ this.state.weightM,
                       source:this.props.startAddress,
                       destination:this.props.endAddress,
                       startDate:"2016-05-18T16:00:00Z",
@@ -186,12 +219,17 @@ class ParcelDetailScreen extends Component {
                       pick_lat:'',
                       pick_long:'',
                       pick_address: '',
-                      height: this.state.height,
-                      width:this.state.width,
-                      length:this.state.length,
+                      height: this.state.height+' '+ this.state.heightM,
+                      width: this.state.width+' '+this.state.widthM,
+                      length: this.state.length+' '+this.state.lenghtM,
+                      rating: 5
                   }
                   console.log(JSON.stringify(requestJSON));
-                  this.props.addPackage(JSON.stringify(requestJSON));
+                  if (this.props.item) {
+                    this.props.editPackage(JSON.stringify(requestJSON), this.props.item._id);
+                  }else {
+                    this.props.addPackage(JSON.stringify(requestJSON));
+                  }
                 });
             } catch (error) {
               // Error retrieving data
@@ -204,16 +242,16 @@ class ParcelDetailScreen extends Component {
 
     render(){
       let data = [{
-  			value: 'CM',
+  			value: 'cm',
   		}, {
-  			value: 'INCH',
+  			value: 'inch',
   		}, {
-  			value: 'M',
+  			value: 'm',
   		}];
       let dataW = [{
-  			value: 'Kg',
+  			value: 'kg',
   		}, {
-  			value: 'gram',
+  			value: 'gm',
   		}
   		];
         return(
@@ -239,10 +277,10 @@ class ParcelDetailScreen extends Component {
                         onPress={(data) => this.onRadioClick(data)}
                         radio_props={radioProps}
                         initial={null}
-                        formHorizontal={false}
+                        animation={true}
+                        style={{flex:1, flexDirection:'column'}}
                         buttonColor={'white'}
                         labelColor={'white'}
-                        style={{backgroundColor: 'transparent', padding:0, flex:1 }}
                       />
                     </View>
 
@@ -250,19 +288,19 @@ class ParcelDetailScreen extends Component {
     								<View style={{flex:.6,justifyContent:'center'}}>
     									<Item>
                       	<Icon active name='straighten'size={20} color='white' style={{ backgroundColor: 'transparent' }} />
-    										<Input placeholder='Package Title' placeholderTextColor='white' onChangeText={(text) => this.setState({title:text})} textColor='white'style={{color:'white'}} />
+    										<Input placeholder='Package Title' placeholderTextColor='white' value={this.state.title} onChangeText={(text) => this.setState({title:text})} textColor='white'style={{color:'white'}} />
     									</Item>
     								</View>
     								<View style={{flex:.6,flexDirection:'row'}}>
     									<View style={{flex:.7,paddingHorizontal:'2%'}}>
     										<Item>
                           <Icon active name='straighten'size={20} color='white' style={{ backgroundColor: 'transparent' }} />
-    											<Input placeholder='Length' placeholderTextColor='white' keyboardType='numeric' style={{color:'white'}} onChangeText={(text) => this.setState({length:text})}/>
+    											<Input placeholder='Length' placeholderTextColor='white' value={this.state.length}keyboardType='numeric' style={{color:'white'}} onChangeText={(text) => this.setState({length:text})}/>
     										</Item>
     									</View>
     									<View style={{flex:.3,borderBottomColor:'white'}}>
     						        <Dropdown
-                          value={data[0].value.toString()}
+                          value={this.state.lenghtM.toString()}
     											label='Lenght'
     											data={data}
     											baseColor='white'
@@ -277,12 +315,12 @@ class ParcelDetailScreen extends Component {
     										<Item>
 
     											<Icon active name='more-vert'size={20} color='white' style={{ backgroundColor: 'transparent' }} />
-    											<Input placeholder='Height' placeholderTextColor='white' keyboardType='numeric'style={{color:'white'}} onChangeText={(text) => this.setState({height:text})}/>
+    											<Input placeholder='Height' placeholderTextColor='white' keyboardType='numeric'style={{color:'white'}} onChangeText={(text) => this.setState({height:text})} value={this.state.height}/>
     										</Item>
     									</View>
     									<View style={{flex:.3}}>
                         <Dropdown
-                          value={data[0].value.toString()}
+                          value={this.state.heightM.toString()}
     											label='HEIGHT'
     											data={data}
                           onChangeText={(data,index)=> this.setState({heightM:data},() => console.log(this.state.heightM))}
@@ -297,13 +335,13 @@ class ParcelDetailScreen extends Component {
     										<Item>
 
     											<Icon active name='straighten'size={20} color='white' style={{ backgroundColor: 'transparent' }} />
-    											<Input placeholder='Width' placeholderTextColor='white' keyboardType='numeric' style={{color:'white'}} onChangeText={(text) => this.setState({width:text})}/>
+    											<Input placeholder='Width' placeholderTextColor='white' keyboardType='numeric' style={{color:'white'}} onChangeText={(text) => this.setState({width:text})} value={this.state.width}/>
     										</Item>
     									</View>
     									<View style={{flex:.3}}>
 
     										<Dropdown
-                          value={data[0].value.toString()}
+                          value={this.state.widthM.toString()}
     											label='WIDTH'
     											data={data}
                           onChangeText={(data,index)=> this.setState({widthM:data},() => console.log(this.state.widthM))}
@@ -318,12 +356,12 @@ class ParcelDetailScreen extends Component {
     										<Item>
 
     											<Icon active name='markunread-mailbox'size={20} color='white' style={{ backgroundColor: 'transparent' }} />
-    											<Input placeholder='Weight' placeholderTextColor='white' keyboardType='numeric'style={{color:'white'}} onChangeText={(text) => this.setState({weight:text})}/>
+    											<Input placeholder='Weight' placeholderTextColor='white' keyboardType='numeric'style={{color:'white'}} onChangeText={(text) => this.setState({weight:text})} value={this.state.weight}/>
     										</Item>
     									</View>
     									<View style={{flex:.3}}>
                         <Dropdown
-                          value={dataW[0].value.toString()}
+                          value={this.state.weightM.toString()}
     											label='WEIGHT'
     											data={dataW}
                           onChangeText={(data,index)=> this.setState({weightM:data},() => console.log(this.state.weightM))}
@@ -337,23 +375,20 @@ class ParcelDetailScreen extends Component {
     									<Item>
 
     										<Icon active name='attach-money'size={20} color='white' style={{ backgroundColor: 'transparent' }} />
-    										<Input placeholder='Price Detail' placeholderTextColor='white' keyboardType='numeric'style={{color:'white'}} onChangeText={(text) => this.setState({price:text})}/>
+    										<Input placeholder='Budget' placeholderTextColor='white' keyboardType='numeric'style={{color:'white'}} onChangeText={(text) => this.setState({price:text})} value={this.state.budget}/>
     									</Item>
     								</View>
                     <View style={{flex:.6}}>
     									<Item>
 
     										<Icon active name='quantity'size={20} color='white' style={{ backgroundColor: 'transparent' }} />
-    										<Input placeholder='Quantity' placeholderTextColor='white' keyboardType='numeric'style={{color:'white'}} onChangeText={(text) => this.setState({quantity:text})}/>
+    										<Input placeholder='Quantity' placeholderTextColor='white' keyboardType='numeric'style={{color:'white'}}value={this.state.quantity} onChangeText={(text) => this.setState({quantity:text})} />
     									</Item>
     								</View>
     								<View style={{flex:.6}}>
     									<Item>
-
     										<Item>
-
-
-    											<Input placeholder='Discription Of Package..' placeholderTextColor='white'style={{color:'white'}} multiline={true} onChangeText={(text) => this.setState({description:text})}/>
+    											<Input placeholder='Discription Of Package..' placeholderTextColor='white'style={{color:'white'}} multiline={true} onChangeText={(text) => this.setState({description:text})} value={this.state.description}/>
     										</Item>
     									</Item>
     								</View>

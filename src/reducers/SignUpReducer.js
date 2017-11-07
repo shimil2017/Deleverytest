@@ -7,15 +7,18 @@ const INITIAL_STATE = { registerResponse: {}, loading: false, isRegistered: fals
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case SIGN_UP_SUCCESS:
+    alert("Hi "+action.payload.data.first_name+", Welcome to Package Delivery App.")
       try {
         console.log(action.payload);
-        AsyncStorage.setItem('user_id', action.payload.data.id);
-        Actions.pop();
-        Actions.pop();
+        AsyncStorage.setItem('user_id', action.payload.data._id);
+
       } catch (error) {
         // Error saving data
+
         console.log('Saving user_id Error', error);
       }
+      Actions.pop();
+      Actions.pop();
       return { ...state,
         registerResponse: action.payload.data,
         isRegistered: true,

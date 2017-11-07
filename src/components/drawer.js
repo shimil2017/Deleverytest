@@ -88,7 +88,7 @@ class Drawer extends Component{
                   <Icon name="add" size={25} color='#606060' style={{backgroundColor:'transparent'}} />
                 </View>
                 <View style={styles.textarea}>
-                <TouchableOpacity onPress={()=> Actions.PostPackageScreen()}>
+                <TouchableOpacity onPress={()=> {(this.props.loggedIn)?Actions.PostPackageScreen(): Actions.login()}}>
                   <Text style={styles.text}>Add Package</Text>
                 </TouchableOpacity>
                 </View>
@@ -104,7 +104,7 @@ class Drawer extends Component{
                   <Icon name="view-quilt" size={25} color='#606060' style={{backgroundColor:'transparent'}} />
                 </View>
                 <View style={styles.textarea}>
-                <TouchableOpacity onPress={()=>alert("Under development")}>
+                <TouchableOpacity onPress={()=> Actions.profile({via:1})}>
                   <Text style={styles.text}>My Current Posts</Text>
                 </TouchableOpacity>
                 </View>
@@ -120,7 +120,7 @@ class Drawer extends Component{
                 <Icon name="history" size={25} color='#606060' style={{backgroundColor:'transparent'}} />
               </View>
               <View style={styles.textarea}>
-              <TouchableOpacity onPress={()=>alert("Under development")}>
+              <TouchableOpacity onPress={()=> Actions.profile({via:3})}>
                 <Text style={styles.text}>Previous Posts</Text>
                 </TouchableOpacity>
               </View>
@@ -145,7 +145,7 @@ class Drawer extends Component{
                   <Icon name="date-range" size={25} color='#606060' style={{backgroundColor:'transparent'}} />
                 </View>
                 <View style={styles.textarea}>
-                <TouchableOpacity onPress={()=>Actions.TravelPlanScreen()}>
+                <TouchableOpacity onPress={()=>{(this.props.loggedIn)?Actions.TravelPlanScreen():Actions.login()}}>
                   <Text style={styles.text}>Manage Availability</Text>
                   </TouchableOpacity>
                 </View>
@@ -153,21 +153,7 @@ class Drawer extends Component{
           :
               <View></View>
          }
-         {
-           (this.state.isTraveler === true )?
-             <View style={{flex:.11,flexDirection:'row',marginLeft:20}}>
-               <View style={styles.icon}>
-                 <Icon name="reply" size={25} color='#606060' style={{backgroundColor:'transparent'}} />
-               </View>
-               <View style={styles.textarea}>
-               <TouchableOpacity onPress={()=>alert("Under development")}>
-                 <Text style={styles.text}>Delivery Requests</Text>
-                 </TouchableOpacity>
-               </View>
-             </View>
-         :
-             <View></View>
-        }
+
         {
           (this.state.isTraveler === true )?
             <View style={{flex:.11,flexDirection:'row',marginLeft:20}}>
@@ -175,7 +161,7 @@ class Drawer extends Component{
                 <Icon name="reply" size={25} color='#606060' style={{backgroundColor:'transparent'}} />
               </View>
               <View style={styles.textarea}>
-              <TouchableOpacity onPress={()=>alert("Under development")}>
+              <TouchableOpacity onPress={()=> Actions.profile({via:4})}>
                 <Text style={styles.text}>Successful Delivery</Text>
                 </TouchableOpacity>
               </View>

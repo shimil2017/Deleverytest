@@ -28,6 +28,12 @@ export default class TravelPlanScreen extends Component{
     this.onDateChange = this.onDateChange.bind(this);
   //  this.onDayPress = this.onDayPress.bind(this);
   }
+  componentDidMount() {
+    console.log("ssssssss",this.props.item1)
+    if(this.props.item1){
+      this.setState({ selectedStartDate:this.props.item1.startDate, selectedEndDate:this.props.item1.endDate});
+    }
+  }
   onDateChange(date, type) {
     if (type === 'END_DATE') {
       this.setState({
@@ -50,8 +56,6 @@ export default class TravelPlanScreen extends Component{
   onContinueClick(){
     if (this.state.selectedStartDate === null ) {
       alert("Please select a start date of travel plan.");
-    }else if (this.state.selectedEndDate === null ) {
-      alert("Please select an end date to travel plan.");
     }
     // else if (this.state.budget === null ) {
     //   alert("Please add budget.");
@@ -61,7 +65,8 @@ export default class TravelPlanScreen extends Component{
          isTravelPlan: true,
          startDate: this.state.selectedStartDate,
          endDate: this.state.selectedEndDate,
-         budget: this.state.budget
+         budget: this.state.budget,
+        item1: this.props.item1
        });
     }
   }
@@ -72,22 +77,21 @@ export default class TravelPlanScreen extends Component{
     "August", "September", "October",
     "November", "December"
   ];
-    const minDate = new Date();
-    const { selectedStartDate, selectedEndDate } = this.state;
-    console.log(minDate.getDate());
-    const startDate  =  selectedStartDate ? selectedStartDate.getDate()+" "+monthNames[selectedStartDate.getMonth()]+" "+ selectedStartDate.getFullYear() : '';
-    const endDate = selectedEndDate ? selectedEndDate.getDate()+" "+monthNames[selectedEndDate.getMonth()]+" "+ selectedEndDate.getFullYear() : '';
+  const minDate = new Date();
+  const { selectedStartDate, selectedEndDate } = this.state;
+  console.log(minDate.getDate());
+  const newstartDate= new Date(selectedStartDate);
+  const newendDate=new Date(selectedEndDate);
+  const startDate  =  selectedStartDate ? newstartDate.getDate()+" "+monthNames[newstartDate.getMonth()]+" "+ newstartDate.getFullYear() : '';
+  const endDate =  newendDate ?  newendDate.getDate()+" "+monthNames[ newendDate.getMonth()]+" "+  newendDate.getFullYear() : '';
 
-    var nextDate = new Date(selectedStartDate);
-    var nextWeek = selectedStartDate?new Date(nextDate.getTime() + 7 * 24 * 60 * 60 * 1000):new Date(minDate.getTime() + 30 * 24 * 60 * 60 * 1000);
-
+  var nextDate = new Date(selectedStartDate);
+  var nextWeek = selectedStartDate?new Date(nextDate.getTime() + 7 * 24 * 60 * 60 * 1000):new Date(minDate.getTime() + 30 * 24 * 60 * 60 * 1000);
     return(
       <View style={{ flex: 1,flexDirection:'column' }}>
         <CalendarPicker
-
             selectedDayColor='#6945D1'
             selectedDayTextColor='white'
-            maxDate={nextWeek}
             minDate={minDate}
             onDateChange={this.onDateChange}
             style={styles.calendar}
@@ -96,10 +100,14 @@ export default class TravelPlanScreen extends Component{
 
       <View style={{flex:.5,flexDirection:'column'}}>
           <Form >
-
-            <Text style={{ fontSize: 15, color: 'red', marginTop: 10 }}>*Select dates in between you can travel(1 week interval)</Text>
-            <Text style={{ fontSize: 15, marginTop: 10 }}>SELECTED START DATE: { startDate }</Text>
-            <Text style={{ fontSize: 15, marginTop: 10 }}>SELECTED END DATE: { endDate }</Text>
+            <View style={{ flexDirection: 'row' } }>
+              <Icon name='flight-takeoff' color='#6945D1' size={30} />
+              <Text style={{ fontSize: 15, marginTop: 10,marginLeft: 10  }}>SELECTED DEPARTURE DATE: { startDate }</Text>
+            </View>
+            <View style={{ flexDirection: 'row' } }>
+              <Icon name='flight-land' color='#6945D1' size={30} />
+              <Text style={{ fontSize: 15, marginTop: 10, marginLeft: 10 }}>SELECTED RETURN DATE: { endDate }</Text>
+            </View>
           <Button
             rounded
             onPress={()=> this.onContinueClick()}

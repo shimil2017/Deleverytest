@@ -7,12 +7,14 @@ export const LOGOUT = "logout";
 import { LOGIN,LOGIN_FB } from '../constant/index';
 /* eslint no-undef: "error"*/
 /* eslint-env browser*/
-export const login = (email, password, loginType) => {
+export const login = (email, password, loginType, device_id, device_type) => {
   return function (dispatch) {
-    var data = {
+    const data = {
          "email":email,
          "password":password,
-         "loginType":loginType
+         "loginType":loginType,
+         "device_token": device_id,
+         "device_type": device_type
        }
     var request = {
       headers: {
@@ -50,16 +52,18 @@ export const login = (email, password, loginType) => {
       });
   };
 };
-export const loginFB = (first_name,last_name,email,facebook_id,image, gender) => {
+export const loginFB = ( first_name, last_name, email, facebook_id, image, gender, deviceType, fcmToken ) => {
   return function (dispatch) {
     var data = {
-        "first_name":first_name,
-        "last_name":last_name,
-        "email":email,
-        "facebook_id":facebook_id,
-        "loginType":"2",
-        "image":image,
+        "first_name": first_name,
+        "last_name": last_name,
+        "email": email,
+        "facebook_id": facebook_id,
+        "loginType": "2",
+        "image": image,
         "gender": gender,
+        "device_type": deviceType,
+        "device_token": fcmToken
        }
     var request = {
       headers: {

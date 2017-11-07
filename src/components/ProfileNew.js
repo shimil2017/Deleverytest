@@ -24,6 +24,9 @@ import { IMAGE_URL } from '../constant/index';
 const WINDOW_WIDTH = Dimensions.get('window').width;
 const WINDOW_HEIGHT = Dimensions.get('window').height;
 import { Actions } from 'react-native-router-flux';
+import MyDelivery from './userprofilecomponents/MyDelivery';
+import MyPreviousPost from './userprofilecomponents/MyPreviousPost';
+
 const mapStateToProps = ({ LoginReducer }) => {
   return {
     loginResponse: LoginReducer.loginResponse,
@@ -39,15 +42,55 @@ class ProfileNew extends Component {
     this.state = {
       selected: 'my_packages'
     }
+    console.log("ProfileNew----constructor");
+  }
+  componentWillMount(){
+    console.log("ProfileNew----Events");
+    if (this.props.via !== undefined && this.props.via !==null) {
+      if (this.props.via ===1) {
+        this.setState({selected: 'my_packages'});
+
+      }else if (this.props.via ===2) {
+        this.setState({selected: 'Travel'});
+
+      }else if (this.props.via ===3) {
+        this.setState({selected: 'Post'});
+
+      }else if (this.props.via ===4) {
+        this.setState({selected: 'Delivery'});
+
+      }
+    }
+  }
+  componentWillReceiveProps(nextProps) {
+    console.log("ghasghdafsgfasasdfgdghsadgfasgdfgahsgh");
+    if (nextProps.via !== undefined && nextProps.via !==null) {
+      if (nextProps.via ===1) {
+        this.setState({selected: 'my_packages'});
+
+      }else if (nextProps.via ===2) {
+        this.setState({selected: 'Travel'});
+
+      }else if (nextProps.via ===3) {
+        this.setState({selected: 'Post'});
+
+      }else if (nextProps.via ===4) {
+        this.setState({selected: 'Deleveries'});
+
+      }
+    }
+  }
+  componentWillMount() {
+    console.log("ProfileNew----Events");
   }
   render() {
     let profilePic ='';
-    if (this.props.loginResponse.loginType !== undefined && this.props.loginResponse.loginType === 2) {
+    if (this.props.loginResponse.loginType !== undefined && this.props.loginResponse.loginType === 2 && this.props.loginResponse.image !== undefined) {
       profilePic = this.props.loginResponse.image;
-    }else {
+    }else if(this.props.loginResponse.image !== undefined ) {
       profilePic = IMAGE_URL+this.props.loginResponse.image;
     }
-    console.log("PP",profilePic);
+    console.log('PP', profilePic);
     if (this.props.loginResponse === null || this.props.loginResponse === undefined ||  this.props.loginResponse.first_name === undefined || this.props.loginResponse.first_name === null || this.props.loginResponse.first_name === '') {
       return(
         <View style={{ marginTop:50, flex:1,alignSelf:'center',alignItems:'center'}}>
@@ -70,7 +113,7 @@ class ProfileNew extends Component {
               </TouchableOpacity>
             </View>
             <View style={{ flex: 0.12, alignItems: 'center' }}>
-              <TouchableOpacity onPress={null} style={{ backgroundColor: 'transparent' }}>
+              <TouchableOpacity onPress={()=> Actions.Settings()} style={{ backgroundColor: 'transparent' }}>
                 <MIcon name='settings' color='white' size={30} />
               </TouchableOpacity>
             </View>
@@ -121,7 +164,7 @@ class ProfileNew extends Component {
               <TouchableOpacity onPress={() => this.setState({ selected: 'Post' })} style={{ alignItems: 'center', justifyContent: 'center' }}>
                 <MIcon name='local-offer' color= {this.state.selected === 'Post' ? '#6643d8' : 'grey'} size={25} />
               </TouchableOpacity>
-              <Text style={{ fontSize:12 ,color:this.state.selected === 'Post' ? '#6643d8' : 'grey'  }}>My Post</Text>
+              <Text style={{ fontSize:12 ,color:this.state.selected === 'Post' ? '#6643d8' : 'grey'  }}>My Previous Posts</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => this.setState({ selected: 'Deleveries' })} style={{ flex: 0.25, alignItems: 'center', justifyContent: 'center', borderBottomWidth: 3, borderBottomColor: this.state.selected === 'Deleveries' ? '#6643d8' : 'transparent' }}>
               <TouchableOpacity onPress={() => this.setState({ selected: 'Deleveries' })} style={{ alignItems: 'center', justifyContent: 'center' }}>
@@ -135,7 +178,7 @@ class ProfileNew extends Component {
               this.state.selected === 'my_packages'
                ? <MyPackagesList /> : this.state.selected === 'Travel'
                ? <MyTravelPlansScreen /> : this.state.selected === 'Post'
-                ? <Deleveries /> : <Deleveries />
+                ? <MyPreviousPost /> : <MyDelivery />
             }
           </View>
         </View>

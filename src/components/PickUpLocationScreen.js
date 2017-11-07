@@ -138,7 +138,7 @@ class PickupLocationScreen extends Component{
                raised
                buttonStyle={{backgroundColor: '#00cccc', borderRadius:5}}
                textStyle={{textAlign: 'center',fontWeight:'500'}}
-               title={`Select this location`}
+               title={'Select this location'}
              />
           :
             <View></View>

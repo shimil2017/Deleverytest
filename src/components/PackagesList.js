@@ -54,7 +54,7 @@ class PackagesList extends Component{
          />
        )
      }
-     if (this.props.packagesListResponse.data === null || this.props.packagesListResponse.data.length ===0) {
+     if (this.props.packagesListResponse.data === undefined || this.props.packagesListResponse.data === null || this.props.packagesListResponse.data.length ===0) {
        return(
          <Text>There is no Packages arround right now!</Text>
        )
@@ -67,7 +67,7 @@ class PackagesList extends Component{
             renderItem={({item}) =>
             <TouchableOpacity onPress={()=> Actions.TravelDealScreen({
               item: item,traveller_plan_id:this.props.traveller_plan_id, package_id: item._id,
-              is_req_to_traveller:false,is_req_to_package:true
+              is_req_to_traveller:false,is_req_to_package:true, via: 2
             })}>
               <Card style={{flex:.4,borderRadius:10,backgroundColor:"white",borderWidth:1.5,borderColor:'#CCD1D1'}}>
                 <View  style={{flex:.50,flexDirection:'row'}}>
@@ -103,7 +103,7 @@ class PackagesList extends Component{
                            <Icon name="straighten" size={25} color='grey' style={{backgroundColor:'transparent'}} />
                         </View>
                         <View style={{flex:.8,justifyContent:'center'}}>
-                           <Text style={{fontSize:16}}>{item.length}X{item.width}X{item.height}(m)</Text>
+                           <Text style={{fontSize:16}}>{item.length}X{item.width}X{item.height}</Text>
                         </View>
                  </View>
                      <View style={{flex:.33,justifyContent:'center',flexDirection:'row'}}>
@@ -111,7 +111,7 @@ class PackagesList extends Component{
                          <Icon name="scanner" size={25} color='grey' style={{backgroundColor:'transparent'}} />
                        </View>
                        <View style={{flex:.8,justifyContent:'center'}}>
-                         <Text style={{fontSize:16}}>{item.weight}kg</Text>
+                         <Text style={{fontSize:16}}>{item.weight}</Text>
                       </View>
                     </View>
                   </View>

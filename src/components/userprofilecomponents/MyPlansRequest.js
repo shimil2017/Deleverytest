@@ -11,6 +11,36 @@ import { Actions } from 'react-native-router-flux';
 export default class MyPlansRequest extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      isClosed: false,
+    }
+    console.log(this.props.data);
+
+  }
+  componentDidMount() {
+    for (var i = 0; i < this.props.data.length; i++) {
+      console.log(i);
+      if (this.props.data[i].is_req_to_package === true && this.props.data[i].is_req_to_traveller === true ) {
+        this.setState({ isClosed: true}, ()=> console.log("isClosed"));
+        break;
+      }
+    }
+  }
+  onRowClick(item) {
+  
+    if (item.is_req_to_package === true && item.is_req_to_traveller === true) {
+        Actions.ChangeStatusScene({ packageDetails: item.package_id, travellerDetails: this.props.travellerDetails, via: 2});
+    }else if(this.state.isClosed ===false){
+      //console.log(item);
+      Actions.FinalDealScreen({ traveller_plan_id: item.traveller_plan_id,
+          package_id: item.package_id._id,
+          budget: item.budget,
+          via: '2',
+          item: item,
+        });
+    }else if (this.state.isClosed ===true) {
+      alert("One deal is already closed in request. So you can't check this request details.")
+    }
 
   }
   _keyExtractor = (item, index) => item._id;
@@ -20,7 +50,7 @@ export default class MyPlansRequest extends Component {
            keyExtractor={this._keyExtractor}
            data={this.props.data}
            renderItem={({item}) =>
-           <TouchableOpacity onPress={()=>alert("under development")}>
+           <TouchableOpacity onPress={()=>  this.onRowClick(item)}  >
              <Card style={{flex:.4,borderRadius:10,backgroundColor:"white",borderWidth:1.5,borderColor:'#CCD1D1'}}>
                <View  style={{flex:.50,flexDirection:'row'}}>
                    <View style={{flex:.3,justifyContent:'center',alignItems:'center', marginTop:10}}>
@@ -29,13 +59,13 @@ export default class MyPlansRequest extends Component {
                        animating={true}
                        style={{alignSelf: "center", alignItems: "center",position: 'absolute', }} />
                      {
-                       (item.packagedata.image !== '')?
+                       (item.package_id.image !== '')?
                        <Thumbnail
                          onLoadEnd={() => this.setState({isImageLoading:false})}
                          onLoadStart={()=> this.setState({isImageLoading:true})}
                          onLoad={() => this.setState({isImageLoading:false})}
                          large
-                         source={{uri: 'http://52.39.212.226:4106/images/upload/'+item.packagedata.image}} />
+                         source={{uri: 'http://52.39.212.226:4106/images/upload/'+item.package_id.image}} />
                        :
                        <Thumbnail
                          onLoadEnd={() => this.setState({isImageLoading:false})}
@@ -48,14 +78,14 @@ export default class MyPlansRequest extends Component {
                    </View>
                  <View style={{flex:.5,justifyContent:'center'}}>
                      <View style={{flex:.33,justifyContent:'center'}}>
-                       <Text style={{color:'black',fontWeight:'bold',fontSize:20}}>{item.packagedata.package_name}</Text>
+                       <Text style={{color:'black',fontWeight:'bold',fontSize:20}}>{item.package_id.package_name}</Text>
                      </View>
                      <View style={{flex:.33,justifyContent:'center',flexDirection:'row'}}>
                        <View style={{flex:.15,justifyContent:'center'}}>
                           <Icon name="straighten" size={25} color='grey' style={{backgroundColor:'transparent'}} />
                        </View>
                        <View style={{flex:.8,justifyContent:'center'}}>
-                          <Text style={{fontSize:16}}>{item.packagedata.length}X{item.packagedata.width}X{item.packagedata.height}(m)</Text>
+                          <Text style={{fontSize:16}}>{item.package_id.length}X{item.package_id.width}X{item.package_id.height}(m)</Text>
                        </View>
                 </View>
                     <View style={{flex:.33,justifyContent:'center',flexDirection:'row'}}>
@@ -63,12 +93,20 @@ export default class MyPlansRequest extends Component {
                         <Icon name="scanner" size={25} color='grey' style={{backgroundColor:'transparent'}} />
                       </View>
                       <View style={{flex:.8,justifyContent:'center'}}>
-                        <Text style={{fontSize:16}}>{item.packagedata.weight}kg</Text>
+                        <Text style={{fontSize:16}}>{item.package_id.weight}kg</Text>
                      </View>
                    </View>
                  </View>
+
                  <View style={{flex:.2,justifyContent:'center'}}>
-                   <Text style={{fontSize:30,color:'red'}}>${item.deal.budget}</Text>
+                   {
+                     (item.is_req_to_package === true && item.is_req_to_traveller === true)?
+                      <Icon name="check-circle" size={30} color='#6945D1'/>
+                      :
+                      <Icon name="watch-later" size={30} color='#6945D1'/>
+                   }
+
+                   <Text style={{fontSize:30,color:'red'}}>${item.budget}</Text>
                  </View>
              </View>
 
@@ -87,8 +125,8 @@ export default class MyPlansRequest extends Component {
                      </View>
                  </View>
                  <View style={{flex:.7}}>
-                     <Text style={{fontWeight:'bold',fontSize:14.5}}>{item.packagedata.source}</Text>
-                     <Text style={{fontWeight:'bold',fontSize:14.5,marginTop:40}}>{item.packagedata.destination}</Text>
+                     <Text style={{fontWeight:'bold',fontSize:14.5}}>{item.package_id.source}</Text>
+                     <Text style={{fontWeight:'bold',fontSize:14.5,marginTop:40}}>{item.package_id.destination}</Text>
                  </View>
              </View>
            </Card>

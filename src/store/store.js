@@ -9,6 +9,10 @@ import MyTravelPlanListReducer from '../reducers/MyTravelPlanListReducer';
 import MyPackagesListReducer from '../reducers/MyPackagesListReducer';
 import PickUpReducer from '../reducers/PickUpReducer';
 import EditProfileReducer from '../reducers/EditProfileReducer';
+import SaveSettingReducer from '../reducers/SaveSettingReducer';
+import MyPreviousPostReducer from '../reducers/MyPreviousPostReducer';
+import MyDeliveryReducer from '../reducers/MyDeliveryReducer';
+import UpdateDealReducer from '../reducers/UpdateDealReducer';
 
 import { combineReducers } from 'redux';
 
@@ -23,8 +27,11 @@ const reducers = combineReducers({
     MyTravelPlanListReducer: MyTravelPlanListReducer,
     MyPackagesListReducer: MyPackagesListReducer,
     PickUpReducer: PickUpReducer,
-    EditProfileReducer: EditProfileReducer
-
+    EditProfileReducer: EditProfileReducer,
+    SaveSettingReducer: SaveSettingReducer,
+    MyDeliveryReducer: MyDeliveryReducer,
+    MyPreviousPostReducer: MyPreviousPostReducer,
+    UpdateDealReducer: UpdateDealReducer,
 });
 
 export default reducers;

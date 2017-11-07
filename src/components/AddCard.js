@@ -45,13 +45,11 @@ export default class AddCard extends Component {
 		console.log(this.state.addcard);
 		return(
 			<View style={{flex:1}}>
-
-
 					<Text>{this.state.addcard.Card_no}</Text>
 					<Text>{this.state.addcard.exp_Month}</Text>
 					<Text>{this.state.addcard.exp_Year}</Text>
 					<Text>{this.state.addcard.ccv}</Text>
-			
+
 				<View style={{flex:.7}}>
 
 				</View>

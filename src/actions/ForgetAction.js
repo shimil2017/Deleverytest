@@ -15,9 +15,9 @@ return function (dispatch) {
     fetch(FORGOT_PASSWORD, request)
       .then(function (response) {
         console.log(response);
-        if (response.status !== 200) {
-          throw new Error(response.json());
-        }
+        // if (response.status !== 200) {
+        //   throw new Error(response.json());
+        // }
         return response.json();
         })
       .then((responseJson) => {
@@ -32,8 +32,8 @@ return function (dispatch) {
         }
 })
 .catch((error) => {
-          console.log(error);
-          alert(error);
+          console.log( "Error Forgot", error.message);
+          alert(error.message);
           dispatch({
             type: FORGOT_FAIL,
           });

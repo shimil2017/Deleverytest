@@ -11,7 +11,7 @@ export const getTravelerList = () => {
       headers: {
         'Content-Type': 'application/json'
       },
-      method: 'GET',
+      method: 'POST',
     };
     console.log('Request',GET_TRAVELER_LIST, request);
     fetch(GET_TRAVELER_LIST, request)
@@ -42,10 +42,10 @@ export const getTravelerList = () => {
   };
 };
 
-export const getTravelerListExplore = (user_id) => {
+export const getTravelerListExplore = (user_id,km,lat,lng) => {
   return function (dispatch) {
     var data = {
-      "user_id": user_id,
+      "user_id": user_id,"km":km,"long":lng,"lat":lat
     };
     var request = {
       headers: {

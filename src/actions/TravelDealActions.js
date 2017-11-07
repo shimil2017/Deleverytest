@@ -24,7 +24,46 @@ export const postTravelDealStatus = (requstJSON) => {
         return response.json();
       })
       .then((responseJson) => {
-        if (responseJson.messageId != 200) {
+        if (responseJson.status != 200) {
+          throw new Error(responseJson.message);
+        } else {
+          dispatch({
+            type: TRAVELE_DEAL_SUCCESS,
+            payload: responseJson,
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        alert(error);
+        dispatch({
+          type: TRAVELE_DEAL_FAIL,
+        });
+      });
+  };
+};
+
+
+export const putTravelDealStatus = (requstJSON, deal_id) => {
+  return function (dispatch) {
+    var request = {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      method: 'PUT',
+      body: requstJSON,
+    };
+    console.log('Request',TRAVEL_DEAL_STATUS+"/"+deal_id, request);
+    fetch(TRAVEL_DEAL_STATUS+"/"+deal_id, request)
+      .then(function (response) {
+        console.log(response);
+        if (response.status !== 200) {
+          throw new Error(response.json());
+        }
+        return response.json();
+      })
+      .then((responseJson) => {
+        if (responseJson.status != 200) {
           throw new Error(responseJson.message);
         } else {
           dispatch({

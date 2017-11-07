@@ -141,21 +141,36 @@ class TravelDealScreen extends Component {
          </Card>
          <Card style={{flex:.5,flexDirection:'column',padding:5,margin:5,backgroundColor:'white'}} >
             <View style={{marginTop:30,flex:0.3,flexDirection:'row',paddingBottom:10,alignItems:"center",alignSelf:"center"}}>
-            <Button onPress={()=> this.onClickDeal(1,this.props.item.budget)} block primary style={{flex:.5,margin:5}}><Text style={{color:'white'}}> Accept Offer </Text></Button>
+            <Button onPress={()=> this.onClickDeal(1,this.props.item.budget)} block primary style={{flex:.5,margin:5}}>
+              {
+                  (this.props.via ===1 )?
+                  <Text style={{color:'white'}}>Send Offer</Text>
+                  :
+                  <Text style={{color:'white'}}>Accept Offer</Text>
+                }
+
+
+              </Button>
             <Button onPress={()=> this.onClickDeal(2,this.props.item.budget)} block danger style={{flex:.5,margin:5}}><Text style={{color:'white'}}> Decline Offer </Text></Button>
             </View>
-            <View style={{flex:.7,flexDirection:'column'}}>
-              <Text style={{marginLeft:10,color:'green',fontSize:18,fontWeight:"bold"}}>Post new offer($)</Text>
-              <FormInput
-              onChangeText={(text) => this.setState({price:text})}
-              placeholder='Price'
-              placeholderTextColor='#d9d9d9'
-              style={{color:'black',height:50}}
-              containerStyle={{borderColor:'black',backgroundColor:'#F5FCFF'}}
-              keyboardType='numeric'
-              />
-            <Button onPress={()=> this.onClickDeal(3,this.state.price)} block dark style={{marginTop:20}}><Text style={{color:'white'}}> Send Updated Offer </Text></Button>
-            </View>
+            {
+              (this.props.via === 2)?
+             <View style={{flex:.7,flexDirection:'column'}}>
+               <Text style={{marginLeft:10,color:'green',fontSize:18,fontWeight:"bold"}}>Post new offer($)</Text>
+               <FormInput
+               onChangeText={(text) => this.setState({price:text})}
+               placeholder='Price'
+               placeholderTextColor='#d9d9d9'
+               style={{color:'black',height:50}}
+               containerStyle={{borderColor:'black',backgroundColor:'#F5FCFF'}}
+               keyboardType='numeric'
+               />
+             <Button onPress={()=> this.onClickDeal(3,this.state.price)} block dark style={{marginTop:20}}><Text style={{color:'white'}}> Send Updated Offer </Text></Button>
+             </View>
+             :
+             null
+            }
+
           </Card>
           <Spinner color='#3f51b5' animating={this.props.loading}
             style={{ alignSelf:'center',position:'absolute', marginTop: window.height/2-100, left: window.width/2-35 }}

@@ -6,30 +6,93 @@ import {
   Image,
   Platform,
   FlatList,
+  Switch,
+  Alert,
+  AsyncStorage
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import MIcon from 'react-native-vector-icons/MaterialIcons';
-import { Container, Header, Content, List, ListItem, Text, Items, Left, Icon, Body, Segment, Right } from 'native-base';
+import { Container, Header, Content, List, ListItem, Text, Items, Left, Icon, Body, Segment, Right, Spinner } from 'native-base';
 import { Button } from 'react-native-elements';
-import Switch from 'react-native-customisable-switch';
+
 import Slider from 'react-native-slider';
-import {
-  MKSwitch, mdl, MKColor,
-} from 'react-native-material-kit';
+
 import Payment from './Payment';
 import { Actions } from 'react-native-router-flux';
-
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { saveSetting, loadingSetting } from '../actions/SaveSetting';
 const WINDOW_HEIGHT = Dimensions.get('window').height;
-
-export default class Settings extends Component {
+const mapStateToProps = ({ SaveSettingReducer, LoginReducer }) => {
+  return {
+    saveSetting: SaveSettingReducer.saveSetting,
+    loading: SaveSettingReducer.isLoading,
+    loginResponse: LoginReducer.loginResponse,
+  };
+};
+  const mapDispatchToProps = dispatch => {
+    return bindActionCreators({ loadingSetting, saveSetting }, dispatch)
+}
+class Settings extends Component {
   constructor(props) {
     super(props);
     this.state = {
       value: 0,
       arr: [],
       switch2: false,
+      profileVisble: false,
+      newPackageNearby: false,
+      newTravelerNearBy: false,
+      requestonPackage: false,
+      requestonPlan: false,
+      notificationOnTracking: false,
     };
+
   }
+  componentWillMount() {
+    console.log('Seetinggggsgsh',this.props.loginResponse);
+    this.setState({
+      value: this.props.loginResponse.distanceSelected,
+      profileVisble: this.props.loginResponse.profileVisibility,
+      newPackageNearby: this.props.loginResponse.newPackageNearBy,
+      newTravelerNearBy: this.props.loginResponse.newTravellerNearBy,
+      requestonPackage: this.props.loginResponse.reqOnYourPackage,
+      requestonPlan: this.props.loginResponse.reqOnYourTraveller,
+      notificationOnTracking: this.props.loginResponse.notificationOnTracking
+     }, ()=> console.log("fgdgddfgdgfdfg",this.state.newTravelerNearBy));
+  }
+  componentWillReceiveProps(nextProps) {
+
+    if (nextProps.loginResponse !== this.props.loginResponse) {
+      this.props.loginResponse === nextProps.loginResponse;
+    }
+  }
+  onClickSubmit() {
+    Alert.alert(
+  'Update Settings',
+  'Do you want to change settings?',
+  [
+    {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+    {text: 'OK', onPress: () => {const value = AsyncStorage.getItem('user_id',(err, result) => {
+      if (result !== undefined && result !== null && result !== '') {
+        const data = {
+        	"profileVisibility" :  this.state.profileVisble,
+        	"distanceSelected" :  this.state.value,
+        	"newPackageNearBy" : this.state.newPackageNearby,
+        	"newTravellerNearBy" :  this.state.newTravelerNearBy,
+        	"reqOnYourPackage" :  this.state.requestonPackage,
+        	"reqOnYourTraveller" :  this.state.requestonPlan,
+          "notificationOnTracking": this.state.notificationOnTracking
+        };
+        this.props.loadingSetting();
+        this.props.saveSetting(JSON.stringify(data), result);
+      }
+    });}},
+  ],
+  { cancelable: false }
+  )
+  }
+
   render() {
     return (
       <Container style={{ flex: 1 }}>
@@ -47,7 +110,11 @@ export default class Settings extends Component {
               <Text >Profile Visibility</Text>
             </View>
             <View style={{ flex: 0.3, alignItems: 'flex-end' }}>
-              <MKSwitch checked={false} />
+              <Switch
+                onValueChange={(value) => this.setState({profileVisble: value})}
+                style={{marginBottom: 10}}
+                value={this.state.profileVisble}
+              />
             </View>
           </View>
           <View style={{ flex: 0.3, borderBottomColor: 'black', borderBottomWidth: 1, flexDirection: 'column', backgroundColor: 'white' }}>
@@ -60,7 +127,7 @@ export default class Settings extends Component {
                   <Text>Distance Selected :</Text>
                 </View>
                 <View style={{ flex: 0.5 }}>
-                  <Text>{this.state.value}</Text>
+                  <Text>{Math.floor(this.state.value)}</Text>
                 </View>
               </View>
               <View style={{ flex: 0.33, flexDirection: 'row' }}>
@@ -89,7 +156,11 @@ export default class Settings extends Component {
               <Text>New Package NearBy</Text>
             </View>
             <View style={{ flex: 0.3, alignItems: 'flex-end' }}>
-              <MKSwitch checked={false}	/>
+              <Switch
+                onValueChange={(value) => this.setState({newPackageNearby: value})}
+                style={{marginBottom: 10}}
+                value={this.state.newPackageNearby}
+              />
             </View>
           </View>
           <View style={{ flex: 0.2, flexDirection: 'row', backgroundColor: 'white' }}>
@@ -97,12 +168,10 @@ export default class Settings extends Component {
               <Text>New Travler NearBy</Text>
             </View>
             <View style={{ flex: 0.3, alignItems: 'flex-end' }}>
-              <mdl.Switch
-                onColor="rgba(255,152,0,.3)"
-                thumbOnColor="red"
-                rippleColor="rgba(255,152,0,.2)"
-                onPress={() => this.setState({ switch2: false })}
-                onCheckedChange={e => console.log('orange switch checked', e)}
+              <Switch
+                onValueChange={(value) => this.setState({ newTravelerNearBy: value})}
+                style={{marginBottom: 10}}
+                value={this.state.newTravelerNearBy}
               />
             </View>
           </View>
@@ -111,33 +180,39 @@ export default class Settings extends Component {
               <Text>Request on your Package</Text>
             </View>
             <View style={{ flex: 0.3, alignItems: 'flex-end' }}>
-              <MKSwitch checked={false} />
+              <Switch
+                onValueChange={(value) => this.setState({requestonPackage: value})}
+                style={{marginBottom: 10}}
+                value={this.state.requestonPackage}
+              />
             </View>
           </View>
+
           <View style={{ flex: 0.2, flexDirection: 'row', backgroundColor: 'white' }}>
             <View style={{ flex: 0.7, justifyContent: 'center', paddingHorizontal: '3%' }}>
               <Text>Request on your Plan</Text>
             </View>
-            <View style={{ flex: 0.3, alignItems: 'flex-end', paddingRight: '2%' }}>
+            <View style={{ flex: 0.3, alignItems: 'flex-end',}}>
               <Switch
-                activeBackgroundColor="blue"
-                inactiveBackgroundColor="pink"
-                activeButtonBackgroundColor="orange"
-                inactiveButtonBackgroundColor="red"
-                switchWidth={50}
-                switchHeight={20}
-                buttonWidth={30}
-                buttonHeight={30}
-                buttonBorderColor={'rgba(0, 0, 0, 1)'}
-                buttonBorderWidth={0}
-                animationTime={150}
-                padding
-                value={this.state.switch2}
-                onPress={() => this.setState({ switch2: true })}
+                onValueChange={(value) => this.setState({ requestonPlan: value})}
+                style={{marginBottom: 10}}
+                value={this.state.requestonPlan}
               />
             </View>
           </View>
-          <TouchableOpacity onPress={() => Actions.payment()}>
+          <View style={{ flex: 0.2, flexDirection: 'row', backgroundColor: 'white' }}>
+            <View style={{ flex: 0.7, justifyContent: 'center', paddingHorizontal: '3%' }}>
+              <Text>Notifications on Package Tracking</Text>
+            </View>
+            <View style={{ flex: 0.3, alignItems: 'flex-end' }}>
+              <Switch
+                onValueChange={(value) => this.setState({notificationOnTracking: value})}
+                style={{marginBottom: 10}}
+                value={this.state.notificationOnTracking}
+              />
+            </View>
+          </View>
+          <TouchableOpacity onPress={() => Actions.Payment()}>
             <View style={{ flex: 0.2, flexDirection: 'row', padding: '3%', marginTop: '3%', backgroundColor: 'white' }}>
               <View style={{ flex: 0.7, justifyContent: 'center', paddingHorizontal: '3%' }}>
                 <Text style={{ fontSize: WINDOW_HEIGHT * 0.03 }}>Payment</Text>
@@ -152,14 +227,24 @@ export default class Settings extends Component {
             <Button
               rounded
               small
-              onPress={() => alert('Under Dovelopment')}
+              onPress={() => this.onClickSubmit()}
               title="Save Settings"
               color="black"
               backgroundColor="white"
             />
           </View>
+          <View style={{ alignSelf:'center', alignItems: 'center' }}>
+            <Spinner
+              color='#3f51b5'
+              animating={this.props.loading}
+              style={{ alignSelf:'center', position:'absolute', marginTop: window.height/2-100, left: window.width/2-35 }}
+            />
+          </View>
         </Content>
+
+
       </Container>
     );
   }
 }
+export default connect(mapStateToProps, mapDispatchToProps )(Settings);

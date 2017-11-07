@@ -5,7 +5,7 @@ export const SIGN_UP_FAIL = ' signup_fail';
 export const LOADING_STARTED = 'loading_sign_up';
 /* eslint no-undef: "error"*/
 /* eslint-env browser*/
-export const signUp = (email, password, gender, firstName, lastName, phoneNo, image) => {
+export const signUp = (email, password, gender, firstName, lastName, phoneNo, image,  device_id, device_type ) => {
   return function (dispatch) {
     var data = {
         "first_name":firstName,
@@ -15,6 +15,8 @@ export const signUp = (email, password, gender, firstName, lastName, phoneNo, im
          "gender":gender,
          "phone_no":phoneNo,
          "image": image,
+         "device_token": device_id,
+         "device_type": device_type
        }
     var request = {
       headers: {
@@ -27,9 +29,9 @@ export const signUp = (email, password, gender, firstName, lastName, phoneNo, im
     fetch(SIGN_UP, request)
       .then(function (response) {
         console.log(response);
-        if (response.status !== 200) {
-          throw new Error(response.json());
-        }
+        // if (response.status !== 200) {
+        //   throw new Error(response.json());
+        // }
         return response.json();
       })
       .then((responseJson) => {

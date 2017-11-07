@@ -1,12 +1,14 @@
 import React, { Component } from 'react'
-import { View, TouchableOpacity, Image, ActivityIndicator, StyleSheet, PixelRatio, Dimensions } from 'react-native';
+import { View, TouchableOpacity, Image, ActivityIndicator, StyleSheet, PixelRatio, Dimensions, Platform } from 'react-native';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import RadioForm, { RadioButton, RadioButtonInput, RadioButtonLabel } from 'react-native-simple-radio-button';
 import { Container, Content, Form, Item, Input, Button, Text } from 'native-base';
+import PhoneNumberPicker from 'react-native-country-code-telephone-input'
 const window = Dimensions.get('window');
 import { signUp, loadingStarted } from '../actions/SignUpActions';
+
 var ImagePicker = require('react-native-image-picker');
 var radio_props = [
   { label: 'Male ', value: 'male' },
@@ -41,9 +43,15 @@ class SignUpPage extends Component{
       gender:'',
       phone:'',
       base64:'',
-      avatarSource:null,
+      avatarSource: null,
+      countryName: '',
+      callingCode: '',
+      phoneNo: '',
     }
   }
+  PhoneNumberPickerChanged(country, callingCode, phoneNumber) {
+            this.setState({countryName: country.name, callingCode: callingCode, phone: phoneNumber });
+         }
   submit(){
     if(this.state.fname==='')
       alert("Please enter your first name")
@@ -63,8 +71,11 @@ class SignUpPage extends Component{
       alert("Password and confirm password do not match")
     else
     {
+      var deviceType = (Platform.OS === 'ios')? 'ios': 'android';
+
+      console.log("Phone---",this.state.callingCode+''+this.state.phone);
       this.props.loadingStarted();
-      this.props.signUp(this.state.email, this.state.password,this.state.gender, this.state.fname, this.state.lname, this.state.phone, this.state.base64);
+      this.props.signUp(this.state.email, this.state.password, this.state.gender, this.state.fname, this.state.lname, '+91'+this.state.callingCode+''+this.state.phone, this.state.base64, this.props.fcmToken, deviceType);
   }
 }
 selectPhotoTapped() {
@@ -113,6 +124,7 @@ selectPhotoTapped() {
                 <Item >
                   <Icon name="person" size={25} color='black'/>
                   <Input
+                    maxLength={20}
                     placeholder='First Name'
                     placeholderTextColor = "#aaaaaa"
                     onChangeText={(text) => this.setState({ fname: text })}
@@ -121,6 +133,7 @@ selectPhotoTapped() {
                 <Item >
                   <Icon name="person" size={25} color='black'/>
                   <Input
+                    maxLength={20}
                     placeholder='Last Name'
                     placeholderTextColor = "#aaaaaa"
                     onChangeText={(text) => this.setState({ lname: text })}
@@ -136,19 +149,17 @@ selectPhotoTapped() {
                     onChangeText={(text) => this.setState({ email: text })}
                   />
                 </Item>
-                <Item >
-                  <Icon name="phone" size={25} color='black'/>
-                  <Input
-                    placeholder="Phone"
-                    keyboardType='phone-pad'
-                    placeholderTextColor = "#aaaaaa"
-                    autoCapitalize = "none"
-                    onChangeText={(text) => this.setState({ phone: text })}
+
+                  <PhoneNumberPicker
+                    maxLength={12}
+                    style={{width: window.width,flex: 1 }}
+                     countryHint={{name: 'United States', cca2: 'US', callingCode:"1"}}
+                     onChange={this.PhoneNumberPickerChanged.bind(this)}
                   />
-                </Item>
                 <Item >
                   <Icon name="lock" size={25} color='black'/>
                   <Input
+                    maxLength={20}
                     placeholder='Password'
                     placeholderTextColor = "#aaaaaa"
                     autoCapitalize = "none"
@@ -159,6 +170,7 @@ selectPhotoTapped() {
                 <Item >
                   <Icon name="lock" size={25} color='black'/>
                   <Input
+                    maxLength={20}
                     placeholder='Confirm Password'
                     placeholderTextColor = "#aaaaaa"
                     autoCapitalize = "none"
@@ -221,7 +233,7 @@ const styles = StyleSheet.create({
     },
     avatar: {
       alignSelf:'center',
-      borderRadius: 75,
+      borderRadius: 55,
       width: 100,
       height: 100,
     },

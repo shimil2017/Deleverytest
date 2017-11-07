@@ -11,7 +11,18 @@ import { Actions } from 'react-native-router-flux';
 export default class MyPackagesRequest extends Component {
   constructor(props) {
     super(props);
-
+    this.state = {
+      isClosed: false,
+    }
+  }
+  componentDidMount() {
+    for (var i = 0; i < this.props.data.length; i++) {
+      console.log(i);
+      if (this.props.data[i].is_req_to_package === true && this.props.data[i].is_req_to_traveller === true ) {
+        this.setState({ isClosed: true}, ()=> console.log("isClosed"));
+        break;
+      }
+    }
   }
   getDate(date){
     var monthNames = [
@@ -24,6 +35,24 @@ export default class MyPackagesRequest extends Component {
     var monthIndex = date.getMonth();
     return date.getDate()+" "+monthNames[monthIndex]+" "+ date.getFullYear()
   }
+  onRowClick(item) {
+    if (item.is_req_to_package === true && item.is_req_to_traveller === true) {
+      // alert("The deal is successfully closed")
+      // ChangeStatusScene
+    //  alert(this.props.packageDetails.length);
+      Actions.ChangeStatusScene({ packageDetails: this.props.packageDetails, travellerDetails: item.traveller_plan_id, via: 1});
+    }else if(this.state.isClosed ===false) {
+      Actions.FinalDealScreen({ traveller_plan_id: item.traveller_plan_id._id,
+          package_id: item.package_id,
+          budget: item.budget,
+          via: '1',
+          item: item,
+        });
+    }
+    else if (this.state.isClosed ===true) {
+      alert("One deal is already closed in requests. So you can't check this request details.")
+    }
+  }
  _keyExtractor = (item, index) => item._id;
   render() {
     return (
@@ -31,7 +60,7 @@ export default class MyPackagesRequest extends Component {
           keyExtractor={this._keyExtractor}
           data={this.props.data}
           renderItem={({item}) =>
-          <TouchableOpacity onPress={()=>alert("under development")}>
+          <TouchableOpacity onPress={()=> this.onRowClick(item) } >
            <Card style={{flex:.4,borderRadius:10,marginBottom:7,backgroundColor:"white",borderWidth:1.5,borderColor:'#CCD1D1'}}>
              <View style={{flex:.50,flexDirection:'row'}}>
 
@@ -41,13 +70,13 @@ export default class MyPackagesRequest extends Component {
                      animating={true}
                      style={{alignSelf: "center", alignItems: "center",position: 'absolute', }} />
                    {
-                     (item.travellerData.image !== '' )?
+                     (item.traveller_plan_id.image!==null && item.traveller_plan_id.image !== '' )?
                      <Thumbnail
                        onLoadEnd={() => this.setState({isImageLoading:false})}
                        onLoadStart={()=> this.setState({isImageLoading:true})}
                        onLoad={() => this.setState({isImageLoading:false})}
                        large
-                       source={{uri: item.travellerData.image }} />
+                       source={{uri: item.traveller_plan_id.image }} />
                      :
                      <Thumbnail
                        onLoadEnd={() => this.setState({isImageLoading:false})}
@@ -59,7 +88,7 @@ export default class MyPackagesRequest extends Component {
                  </View>
                  <View style={{flex:.5,justifyContent:'center'}}>
                      <View style={{flex:.33,justifyContent:'center'}}>
-                         <Text style={{color:'black',fontWeight:'bold',fontSize:20}}>{item.travellerData.traveller_name}</Text>
+                         <Text style={{color:'black',fontWeight:'bold',fontSize:20}}>{item.traveller_plan_id.traveller_name}</Text>
                      </View>
 
                  </View>
@@ -69,12 +98,12 @@ export default class MyPackagesRequest extends Component {
                <View style={{flex:.1,alignItems:'center'}}>
                  <Icon name="date-range" size={25} color='grey' style={{backgroundColor:'transparent'}} />
                </View>
-               <Text style={{marginLeft:10,flex:.4}}>{this.getDate(item.travellerData.startDate)}</Text>
+               <Text style={{marginLeft:10,flex:.4}}>{this.getDate(item.traveller_plan_id.startDate)}</Text>
                <Text style={{marginLeft:10,flex:.1}}>to</Text>
               <View style={{flex:.1,alignItems:'center'}}>
                 <Icon name="date-range" size={25} color='grey' style={{backgroundColor:'transparent'}} />
               </View>
-              <Text style={{marginLeft:10,flex:.4}}>{this.getDate(item.travellerData.endDate)}</Text>
+              <Text style={{marginLeft:10,flex:.4}}>{this.getDate(item.traveller_plan_id.endDate)}</Text>
             </View>
              <View style={{flex:.50,flexDirection:'row',marginTop:5}}>
                  <View style={{flex:.1,flexDirection:'column'}}>
@@ -91,22 +120,9 @@ export default class MyPackagesRequest extends Component {
                      </View>
                  </View>
                  <View style={{flex:.7}}>
-                     <Text style={{fontWeight:'bold',fontSize:14.5}}>{item.travellerData.source}</Text>
-                     <Text style={{fontWeight:'bold',fontSize:14.5,marginTop:40}}>{item.travellerData.destination}</Text>
+                     <Text style={{fontWeight:'bold',fontSize:14.5}}>{item.traveller_plan_id.source}</Text>
+                     <Text style={{fontWeight:'bold',fontSize:14.5,marginTop:40}}>{item.traveller_plan_id.destination}</Text>
                  </View>
-                 <View style={{flex:.2}}>
-                   {
-                     (item.deals.length >0)?
-                     <View style={{flexDirection:'row'}}>
-                       <Icon name="notifications" size={25} color='#6945D1' style={{backgroundColor:'transparent'}} />
-                       <Text style={{fontSize:18,color:'red',}}>{item.deals.length}</Text>
-                     </View>
-                     :null
-                   }
-                   <TouchableOpacity>
-                   <Icon name="keyboard-arrow-right" size={40} color='#6945D1' style={{backgroundColor:'transparent'}} />
-                  </TouchableOpacity>
-               </View>
              </View>
           </Card>
         </TouchableOpacity>

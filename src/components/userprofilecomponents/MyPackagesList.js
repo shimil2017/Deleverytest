@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View,Text,TextInput,ScrollView,TouchableOpacity,AsyncStorage, Image,Picker, ActivityIndicator, FlatList } from 'react-native';
+import { View,Text,TextInput,ScrollView,TouchableOpacity,AsyncStorage, Image,Picker, ActivityIndicator, FlatList, RefreshControl } from 'react-native';
 import { Button,FormInput } from 'react-native-elements';
 import { Dropdown } from 'react-native-material-dropdown';
 import { List, ListItem, Card, Spinner, Thumbnail } from 'native-base';
@@ -7,7 +7,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { getTravelerList } from '../../actions/TravelerActions';
-import { getMyPackagesList, myPackageStartLoading } from '../../actions/MyPackagesListActions';
+import { getMyPackagesList, myPackageStartLoading, pullToRefreshMyPackagesList } from '../../actions/MyPackagesListActions';
 import { Actions } from 'react-native-router-flux';
 const mapStateToProps = ({ TravelersListReducer, MyPackagesListReducer, LoginReducer, SignUpReducer }) => {
 
@@ -17,10 +17,11 @@ const mapStateToProps = ({ TravelersListReducer, MyPackagesListReducer, LoginRed
     packagesListResponse: MyPackagesListReducer.packagesListResponse,
     isRegistered: SignUpReducer.isRegistered,
     loggedIn: LoginReducer.loggedIn,
+    pullToRefreshPackages: MyPackagesListReducer.pullToRefreshPackages
   };
 };
 const mapDispatchToProps = dispatch => {
-  return bindActionCreators({ getTravelerList, getMyPackagesList, myPackageStartLoading }, dispatch);
+  return bindActionCreators({ getTravelerList, getMyPackagesList, myPackageStartLoading, pullToRefreshMyPackagesList }, dispatch);
 
 };
 class MyPackagesList extends Component{
@@ -43,7 +44,7 @@ class MyPackagesList extends Component{
       console.log("Error getting Token",error);
     }
   }
-  componentWillReceiveProps(nextProps){
+  componentWillReceiveProps(nextProps) {
     if ((nextProps.isRegistered !== this.props.isRegistered && nextProps.isRegistered ===true)
         ||(nextProps.loggedIn !== this.props.loggedIn && nextProps.loggedIn ===true)
   ) {
@@ -61,9 +62,24 @@ class MyPackagesList extends Component{
     }
 
   }
+  _onRefresh() {
+    //this.setState({refreshing: true});
+    this.props.pullToRefreshMyPackagesList();
+      try {
+        const value = AsyncStorage.getItem('user_id',(err, result) => {
+          if (result !== undefined && result !== null && result !== '') {
+
+            this.props.getMyPackagesList(result);
+          }
+          });
+      } catch (error) {
+        // Error retrieving data
+        console.log("Error getting Token",error);
+      }
+  }
   onRowClick(item){
     if (item.deals.length > 0) {
-      Actions.MyPackagesRequest({ data: item.deals });
+      Actions.MyPackagesRequest({ data: item.deals, packageDetails: item });
     }else {
       alert('No Requests received on your package till now.')
     }
@@ -91,10 +107,16 @@ class MyPackagesList extends Component{
     return(
       <View style={{flex:1,}}>
         <FlatList
+          refreshControl={
+            <RefreshControl
+              refreshing={this.props.pullToRefreshPackages}
+              onRefresh={this._onRefresh.bind(this)}
+            />
+          }
           keyExtractor={this._keyExtractor}
           data={this.props.packagesListResponse.data}
           renderItem={({item}) =>
-          <TouchableOpacity onPress={()=> alert('under development')}>
+          <TouchableOpacity onPress={()=> this.onRowClick(item)}>
             <Card style={{flex:.4,borderRadius:10,backgroundColor:"white",borderWidth:1.5,borderColor:'#CCD1D1'}}>
               <View  style={{flex:.50,flexDirection:'row'}}>
                   <View style={{flex:.3,justifyContent:'center',alignItems:'center', marginTop:10}}>
@@ -129,7 +151,7 @@ class MyPackagesList extends Component{
                          <Icon name="straighten" size={25} color='grey' style={{backgroundColor:'transparent'}} />
                       </View>
                       <View style={{flex:.8,justifyContent:'center'}}>
-                         <Text style={{fontSize:16}}>{item.length}X{item.width}X{item.height}(m)</Text>
+                         <Text style={{fontSize:16}}>{item.length}X{item.width}X{item.height}</Text>
                       </View>
                </View>
                    <View style={{flex:.33,justifyContent:'center',flexDirection:'row'}}>
@@ -137,12 +159,12 @@ class MyPackagesList extends Component{
                        <Icon name="scanner" size={25} color='grey' style={{backgroundColor:'transparent'}} />
                      </View>
                      <View style={{flex:.8,justifyContent:'center'}}>
-                       <Text style={{fontSize:16}}>{item.weight}kg</Text>
+                       <Text style={{fontSize:16}}>{item.weight}</Text>
                     </View>
                   </View>
                 </View>
                 <View style={{flex:.2,justifyContent:'center'}}>
-                  <Text style={{fontSize:30,color:'red'}}>${item.budget}</Text>
+                  <Text style={{fontSize:25,color:'red'}}>${item.budget}</Text>
                 </View>
             </View>
 
@@ -176,6 +198,13 @@ class MyPackagesList extends Component{
                   <TouchableOpacity>
                     <Icon name="keyboard-arrow-right" size={40} color='#6945D1' style={{backgroundColor:'transparent'}} />
                   </TouchableOpacity>
+                  {
+                    (item.deals.length === 0)?
+                    <Icon name="create" size={25} color='#6945D1' onPress={()=> Actions.PostPackageScreen({item:item})}/>
+                    :
+                    null
+                  }
+
               </View>
             </View>
           </Card>

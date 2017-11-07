@@ -4,13 +4,13 @@ export const EDIT_PROFILE_SUCCESS = 'EDIT_PROFILE_SUCCESS';
 export const EDIT_PROFILE_FAIL = 'EDIT_PROFILE_FAIL';
 export const LOADING_STARTED_EDIT_PROFILE = 'LOADING_STARTED_EDIT_PROFILE';
 
-export const editProfile = (email, password, gender, firstName, lastName, phoneNo, image) => {
+export const editProfile = (result, email, gender, firstName, lastName, phoneNo, image) => {
   return function (dispatch) {
     const data = {
-        "first_name": firstName,
+         "_id": result,
+         "first_name": firstName,
          "last_name": lastName,
          "email": email,
-         "password": password,
          "gender": gender,
          "phone_no": phoneNo,
          "image": image,
@@ -22,8 +22,8 @@ export const editProfile = (email, password, gender, firstName, lastName, phoneN
       method: 'POST',
       body: JSON.stringify(data)
     };
-    console.log('Request',SIGN_UP,JSON.stringify(data));
-    fetch(SIGN_UP, request)
+    console.log('Request',EDIT_PROFILE,JSON.stringify(data));
+    fetch(EDIT_PROFILE, request)
       .then(function (response) {
         console.log(response);
         if (response.status !== 200) {
@@ -39,6 +39,7 @@ export const editProfile = (email, password, gender, firstName, lastName, phoneN
             type: EDIT_PROFILE_SUCCESS,
             payload: responseJson,
           });
+          Actions.pop();
         }
       })
       .catch((error) => {

@@ -3,11 +3,18 @@ import { View, Text, TextInput, ScrollView, TouchableOpacity, Image, AsyncStorag
 import { Button,FormInput } from 'react-native-elements';
 import { Actions } from 'react-native-router-flux';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import FCM, {FCMEvent, RemoteNotificationResult, WillPresentNotificationResult, NotificationType} from 'react-native-fcm';
+
 export default class Home extends Component{
 
   constructor(props){
     super(props)
     StatusBar.setBarStyle('light-content', true);
+    console.log("Home----constructor");
+  }
+  
+  componentWillMount() {
+    console.log("Home----componentWillMount");
   }
   onClickPostpackage(){
     try {

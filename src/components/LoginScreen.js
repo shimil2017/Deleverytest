@@ -1,14 +1,16 @@
 import React, { Component } from 'react'
-import { View,TextInput,ScrollView,TouchableOpacity,Image,KeyboardAvoidingVie, StatusBar, Dimensions,ActivityIndicator, ImageBackground } from 'react-native';
+import { View, TextInput, ScrollView, TouchableOpacity, Image, KeyboardAvoidingVie, StatusBar, Dimensions, ActivityIndicator, ImageBackground } from 'react-native';
 import { FormInput, SocialIcon } from 'react-native-elements';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Actions } from 'react-native-router-flux';
-import { login, loadingStarted,loginFB } from '../actions/LoginAction';
+import { login, loadingStarted, loginFB } from '../actions/LoginAction';
 import PropTypes from 'prop-types';
 import { Container, Content, Form, Item, Input, Label, Button, Text, Spinner } from 'native-base';
 var { FBLogin, FBLoginManager } = require('react-native-facebook-login');
+import FCM, {FCMEvent, RemoteNotificationResult, WillPresentNotificationResult, NotificationType} from 'react-native-fcm';
+
 const window = Dimensions.get('window');
 const mapStateToProps = ({ LoginReducer }) => {
   return {
@@ -19,10 +21,10 @@ const mapStateToProps = ({ LoginReducer }) => {
     loading: LoginReducer.loading
   };
 };
-const mapDispatchToProps = dispatch => {
-  return bindActionCreators({ login,loadingStarted,loginFB }, dispatch)
-
+  const mapDispatchToProps = dispatch => {
+    return bindActionCreators({ login,loadingStarted,loginFB }, dispatch)
 }
+var fcmToken = '';
 class Loginpage extends Component{
   constructor(props){
     super(props)
@@ -33,6 +35,31 @@ class Loginpage extends Component{
     }
     StatusBar.setBarStyle('light-content', true);
   }
+  componentDidMount() {
+          // iOS: show permission prompt for the first call. later just check permission in user settings
+          // Android: check permission in user settings
+          FCM.requestPermissions().then(()=>console.log('granted')).catch(()=>console.log('notification permission rejected'));
+
+          FCM.getFCMToken().then(token => {
+              console.log("Token====",token);
+              //alert(token);
+              fcmToken = token;
+              // store fcm token in your server
+
+          });
+
+          this.notificationListener = FCM.on(FCMEvent.Notification, async (notif) => {
+              // optional, do some component related stuff
+          });
+
+          // initial notification contains the notification that launchs the app. If user launchs app by clicking banner, the banner notification info will be here rather than through FCM.on event
+          // sometimes Android kills activity when app goes to background, and when resume it broadcasts notification before JS is run. You can use FCM.getInitialNotification() to capture those missed events.
+          // initial notification will be triggered all the time even when open app by icon so send some action identifier when you send notification
+          FCM.getInitialNotification().then(notif=>{
+             console.log(notif)
+          });
+      }
+
   submit(){
     if(this.state.email === '')
       alert("Please enter email")
@@ -44,12 +71,11 @@ class Loginpage extends Component{
       {
         //Actions.drawer();
         this.props.loadingStarted();
-        this.props.login(this.state.email, this.state.pass,"1");
+        var deviceType = (Platform.OS === 'ios')? 'ios': 'android';
+        this.props.login(this.state.email, this.state.pass, "1", fcmToken, deviceType);
       }
   }
-  fbLogin(username,password,facebook_id,fname,lname)
-  {
-
+  fbLogin(username,password,facebook_id,fname,lname) {
    var data={
      'username':username,
      'password':'',
@@ -58,11 +84,15 @@ class Loginpage extends Component{
      'last_name':lname,
      'loginType':2,
      'facebook_id':facebook_id,
+     'device_type': fcmToken
   }
 }
 onLoginWithFB(){
  let _this = this;
 //this.props.ShowLoader();
+if (Platform.OS === 'android') {
+  FBLoginManager.setLoginBehavior(FBLoginManager.LoginBehaviors.Native);
+}
    FBLoginManager.loginWithPermissions(["email","public_profile"], function(error, data){
      if (!error) {
        var UserFbId = data['credentials']['userId'];
@@ -86,7 +116,8 @@ GraphApiCall(UserFbId,Fbtoken){
             let jsonV = JSON.stringify(responseData);
             console.log('fbInfo'+responseData.first_name);
             _this.props.loadingStarted();
-            _this.props.loginFB(responseData.first_name,responseData.last_name,responseData.email,responseData.id,responseData.picture.data.url,responseData.gender);
+            var deviceType = (Platform.OS === 'ios')? 'ios': 'android';
+            _this.props.loginFB(responseData.first_name,responseData.last_name,responseData.email,responseData.id,responseData.picture.data.url,responseData.gender, deviceType ,fcmToken);
           // _this.fbLogin(responseData.email,'password',responseData.id,responseData.first_name,responseData.last_name);
        }).catch((error) => {
            console.log("error is coming",error);
@@ -185,7 +216,7 @@ GraphApiCall(UserFbId,Fbtoken){
       <TouchableOpacity onPress={()=> Actions.register()}>
         <Text >Don't have an account? </Text>
       </TouchableOpacity>
-        <TouchableOpacity onPress={()=> Actions.register()}>
+        <TouchableOpacity onPress={()=> Actions.register({fcmToken: fcmToken})}>
           <Text style={{fontWeight:'bold'}}> Sign Up </Text>
         </TouchableOpacity>
       </View>
