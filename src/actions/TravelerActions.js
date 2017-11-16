@@ -45,7 +45,7 @@ export const getTravelerList = () => {
 export const getTravelerListExplore = (user_id,km,lat,lng) => {
   return function (dispatch) {
     var data = {
-      "user_id": user_id,"km":km,"long":lng,"lat":lat
+      "user_id": user_id
     };
     var request = {
       headers: {

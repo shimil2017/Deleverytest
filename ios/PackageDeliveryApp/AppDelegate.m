@@ -13,7 +13,7 @@
 #import <React/RCTRootView.h>
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <FBSDKLoginKit/FBSDKLoginKit.h>
-
+#import <React/RCTLinkingManager.h>
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -48,8 +48,32 @@
   return [[FBSDKApplicationDelegate sharedInstance] application:application
                                                         openURL:url
                                               sourceApplication:sourceApplication
-                                                     annotation:annotation];
+                                                     annotation:annotation]||
+  
+   [RCTLinkingManager application:application openURL:url
+                      sourceApplication:sourceApplication annotation:annotation];
 }
+
+///////Linking for Paypal
+
+
+
+- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity
+ restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler
+{
+  return [RCTLinkingManager application:application
+                   continueUserActivity:userActivity
+                     restorationHandler:restorationHandler];
+}
+
+
+
+
+
+
+
+
+
 
  - (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler
  {

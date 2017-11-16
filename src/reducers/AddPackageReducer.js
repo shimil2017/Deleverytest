@@ -8,7 +8,7 @@ export default function (state = INITIAL_STATE, action) {
       console.log("SUCESS");
       Actions.pop();
       Actions.pop();
-      Actions.TravelersList({ package_id: action.payload.data._id });
+      Actions.TravelersList({ package_id: action.payload.data._id, budget: action.payload.data.budget });
       return { ...state, isLoading: false };
     case ADD_PACKAGE_FAIL:
       console.log("FAIL");

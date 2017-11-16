@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, TextInput, ScrollView, TouchableOpacity, Image, AsyncStorage, StatusBar } from 'react-native';
+import { View, Text, TextInput, ScrollView, TouchableOpacity, Image, AsyncStorage, StatusBar, WebView } from 'react-native';
 import { Button,FormInput } from 'react-native-elements';
 import { Actions } from 'react-native-router-flux';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -12,7 +12,7 @@ export default class Home extends Component{
     StatusBar.setBarStyle('light-content', true);
     console.log("Home----constructor");
   }
-  
+
   componentWillMount() {
     console.log("Home----componentWillMount");
   }

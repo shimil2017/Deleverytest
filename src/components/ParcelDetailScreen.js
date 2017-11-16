@@ -11,6 +11,8 @@ import { Dropdown } from 'react-native-material-dropdown';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Actions } from 'react-native-router-flux';
 import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+
 const WINDOW_WIDTH = Dimensions.get('window').width;
 const WINDOW_HEIGHT = Dimensions.get('window').height;
 const window = Dimensions.get('window');
@@ -56,6 +58,7 @@ class ParcelDetailScreen extends Component {
       widthM: 'cm',
       heightM: 'cm',
       weightM: 'kg',
+      modalVisible: false
     };
   }
   componentDidMount() {
@@ -90,7 +93,8 @@ class ParcelDetailScreen extends Component {
     this.setState({ radioSelected: data }, () => console.log(this.state.radioSelected));
     if (data === 'pickup') {
       //Actions.PickupLocationScreen();
-      alert("under developement");
+      //alert("under developement");
+      this.setState({ modalVisible: true });
     } else {
       this.setState({ pickupAddress: null }, () => console.log('Removed Pickup'));
     }
@@ -256,6 +260,70 @@ class ParcelDetailScreen extends Component {
   		];
         return(
          <View style={{flex:1,backgroundColor:'#615ECD'}}>
+          <Modal transparent={false} visible={this.state.modalVisible} style={{ flexDirection: "column", flex: 1, marginTop:40 }}>
+
+            <GooglePlacesAutocomplete
+              placeholder= 'Search'
+              minLength={2} // minimum length of text to search
+              autoFocus={false}
+              returnKeyType={'search'} // Can be left out for default return key https://facebook.github.io/react-native/docs/textinput.html#returnkeytype
+              listViewDisplayed='auto' // true/false/undefined
+              fetchDetails={true}
+              renderDescription={row => row.description} // custom description render
+              onPress={(data, details = null) => { // 'details' is provided when fetchDetails = true
+                console.log("=========", details);
+                var data ={
+                    'pick_up_location': details.formatted_address,
+                    'pick_up_lat': details.geometry.location.lat,
+                    'pick_up_lng': details.geometry.location.lng
+                  };
+                  this.setState({ pickupAddress: data, modalVisible: false },
+                      ()=> console.log("New Address Pickup", this.state.pickupAddress)
+                    );
+                //  this.setState({ isSource: true, isDestination: true, showButton:false, loading: true});
+              }}
+
+              getDefaultValue={() => ''}
+
+              query={{
+                // available options: https://developers.google.com/places/web-service/autocomplete
+                key: 'AIzaSyA8W4LJk2g7BDmtuJNHmdrHUYj9mPEixkQ',
+                language: 'en', // language of the results
+              }}
+
+              styles={{
+                flexDirection:'column',
+                textInputContainer: {
+                  width: '100%'
+                },
+                description: {
+                  fontWeight: 'bold'
+                },
+                predefinedPlacesDescription: {
+                  color: '#1faadb'
+                }
+              }}
+
+              currentLocation={true} // Will add a 'Current location' button at the top of the predefined places list
+              currentLocationLabel="Current location"
+              nearbyPlacesAPI='GooglePlacesSearch' // Which API to use: GoogleReverseGeocoding or GooglePlacesSearch
+              GoogleReverseGeocodingQuery={{
+                // available options for GoogleReverseGeocoding API : https://developers.google.com/maps/documentation/geocoding/intro
+              }}
+              GooglePlacesSearchQuery={{
+                // available options for GooglePlacesSearch API : https://developers.google.com/places/web-service/search
+                rankby: 'distance',
+                types: 'food'
+              }}
+
+              filterReverseGeocodingByTypes={['locality', 'administrative_area_level_3']} // filter the reverse geocoding results by types - ['locality', 'administrative_area_level_3'] if you want to display only cities
+              debounce={200} // debounce the requests in ms. Set to 0 to remove debounce. By default 0ms.
+              renderLeftButton={() => <Icon name="chevron-left" onPress={()=> this.setState({modalVisible:false})} style={{marginTop:10} } size={25} />}
+              renderRightButton={() => <TouchableOpacity style={{marginTop:10}} onPress={()=> this.onChooseFromMap()}>
+                <Text>Chosse from Map</Text>
+              </TouchableOpacity>}
+            />
+          </Modal>
           <Container style={{flex:.9,padding:5}}>
             <Content>
               <Form>
@@ -277,7 +345,7 @@ class ParcelDetailScreen extends Component {
                         onPress={(data) => this.onRadioClick(data)}
                         radio_props={radioProps}
                         initial={null}
-                        animation={true}
+                        animation={false}
                         style={{flex:1, flexDirection:'column'}}
                         buttonColor={'white'}
                         labelColor={'white'}

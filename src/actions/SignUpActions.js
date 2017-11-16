@@ -5,7 +5,7 @@ export const SIGN_UP_FAIL = ' signup_fail';
 export const LOADING_STARTED = 'loading_sign_up';
 /* eslint no-undef: "error"*/
 /* eslint-env browser*/
-export const signUp = (email, password, gender, firstName, lastName, phoneNo, image,  device_id, device_type ) => {
+export const signUp = (email, password, gender, firstName, lastName, phoneNo, image,  device_id, device_type, paypalId ) => {
   return function (dispatch) {
     var data = {
         "first_name":firstName,
@@ -16,7 +16,8 @@ export const signUp = (email, password, gender, firstName, lastName, phoneNo, im
          "phone_no":phoneNo,
          "image": image,
          "device_token": device_id,
-         "device_type": device_type
+         "device_type": device_type,
+         "paypalId": paypalId
        }
     var request = {
       headers: {

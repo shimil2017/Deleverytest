@@ -23,7 +23,7 @@ const mapStateToProps = ({ UpdateDealReducer }) => {
 class ChangeStatusScene extends Component {
   constructor(props) {
     super(props);
-    this.state = { text: '', selectedIndex: null, selectedValue: '', data:[] }
+    this.state = { text: '', selectedIndex: null, selectedValue: '', data:[], showRatingBar: false, starCount:0 }
   }
   componentDidMount() {
     if (this.props.packageDetails.is_delivered !== undefined && this.props.packageDetails.is_delivered !== null) {
@@ -35,7 +35,7 @@ class ChangeStatusScene extends Component {
           this.props.packageDetails.is_delivered ===5? 'Not Successfully Received':''
       this.setState({selectedValue: value});
     }
-    if (this.props.via ===1 ) {
+    if (this.props.via === 1 ) {
       var data = [
         {
           value: 'Successfully Received'
@@ -106,21 +106,26 @@ class ChangeStatusScene extends Component {
         alert("Please select status");
     } else {
       this.props.updateDealLoading();
-      this.props.updateDealStatus(this.state.selectedIndex, this.props.packageDetails._id, this.props.travellerDetails._id, this.state.text );
+      this.props.updateDealStatus(this.state.selectedIndex, this.props.packageDetails._id, this.props.travellerDetails._id, this.state.text, this.state.starCount, this.props.dealId );
     }
   }
   onStatusChange(data,index) {
     var newStatus = 0;
     if (data === 'Picked up') {
       newStatus = 1;
+      this.setState({ showRatingBar: false },()=>console.log(this.state.showRatingBar))
     } else if (data === 'on the way') {
       newStatus = 2;
+      this.setState({ showRatingBar: false },()=>console.log(this.state.showRatingBar))
     } else if (data === 'Delivered Successfully') {
       newStatus = 3;
+      this.setState({ showRatingBar: false },()=>console.log(this.state.showRatingBar))
     } else if (data === 'Successfully Received') {
       newStatus = 4;
+      this.setState({ showRatingBar: true },()=>console.log(this.state.showRatingBar))
     } else if (data === 'Not Successfully Received') {
       newStatus = 5;
+      this.setState({ showRatingBar: true },()=>console.log(this.state.showRatingBar))
     }
     this.setState({ selectedIndex: newStatus},() => console.log(this.state.selectedIndex))
   }
@@ -354,6 +359,7 @@ class ChangeStatusScene extends Component {
                 onChangeText={(data,index)=> this.onStatusChange(data, index)}
               />
             </View>
+
             <View style={{ flex: .7, flexDirection: 'column', paddingHorizontal: 20 }}>
               <TextInput
                 style={{ height: 70, borderColor: 'gray', borderWidth: 1, fontSize: 18,padding:20,borderRadius:10 }}
@@ -362,6 +368,23 @@ class ChangeStatusScene extends Component {
                 placeholder='comment box'
                 multiline={true}
               />
+            {
+              (this.state.showRatingBar)?
+              <View style={{flex:0.20,margin:5,flexDirection:'row'}}>
+                <StarRating
+                  disabled={false}
+                  starSize={20}
+                  maxStars={5}
+                  starColor="#ffa500"
+                  rating={this.state.starCount}
+                  selectedStar={(rating) => this.setState({starCount:rating})}
+                  halfStarEnabled={true}
+                />
+            </View>
+            :
+            null
+            }
+
 
               <Button onPress={() => this.onSubmitClick()} block dark style={{ marginTop: 90 }}><Text style={{ color: 'white', size: 30 }}>Submit </Text></Button>
             </View>

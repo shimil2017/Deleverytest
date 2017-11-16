@@ -8,11 +8,12 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { postTravelDealStatus, loadingAddDealStarted } from '../actions/TravelDealActions';
 const window = Dimensions.get('window');
-const mapStateToProps = ({ TravelDealReducer }) => {
+const mapStateToProps = ({ TravelDealReducer, LoginReducer }) => {
 
   return {
     addDealResponse: TravelDealReducer.addDealResponse,
     loading: TravelDealReducer.isLoading,
+    loginResponse: LoginReducer.loginResponse,
   };
 };
 const mapDispatchToProps = dispatch => {
@@ -23,30 +24,35 @@ const mapDispatchToProps = dispatch => {
 class TravelDealScreen extends Component {
   constructor(props){
     super(props);
-    console.log("PACKAGE ID ",this.props.package_id,"TRAVEL PLAN ID",this.props.traveller_plan_id);
-    console.log("TNAME",this.props.item.traveller_name,"PNAME",this.props.item.package_name);
+    console.log("Budget==",this.props.budget);
   }
-  onClickDeal(status,budget){
-   try {
-     this.props.loadingAddDealStarted();
-     const value = AsyncStorage.getItem('user_id',(err, result) => {
+  onClickDeal(status, budget) {
+    if (this.props.loginResponse.paypalId === undefined || this.props.loginResponse.paypalId === null || this.props.loginResponse.paypalId === ''  ) {
+      alert("Please enter Payppal account id first in Edit Profile to send request");
+    }
+    else {
+      try {
+        this.props.loadingAddDealStarted();
+        const value = AsyncStorage.getItem('user_id',(err, result) => {
 
-         const requestJSON = {
-           'status':status,
-           "budget" : budget,
-           "traveller_plan_id" : this.props.traveller_plan_id,
-           "package_id" : this.props.package_id,
-           "user_id" : result,
-           "is_req_to_traveller":this.props.is_req_to_traveller,
-           "is_req_to_package":this.props.is_req_to_package,
-         }
-         console.log("DEALS REQUEST--",JSON.stringify(requestJSON));
-         this.props.postTravelDealStatus(JSON.stringify(requestJSON));
-       });
-   } catch (error) {
-     // Error retrieving data
-     console.log("Error getting Token",error);
-   }
+            const requestJSON = {
+              'status':status,
+              "budget" : budget,
+              "traveller_plan_id" : this.props.traveller_plan_id,
+              "package_id" : this.props.package_id,
+              "user_id" : result,
+              "is_req_to_traveller":this.props.is_req_to_traveller,
+              "is_req_to_package":this.props.is_req_to_package,
+            }
+            console.log("DEALS REQUEST--",JSON.stringify(requestJSON));
+            this.props.postTravelDealStatus(JSON.stringify(requestJSON));
+          });
+      } catch (error) {
+        // Error retrieving data
+        console.log("Error getting Token",error);
+      }
+    }
+
   }
   getDate(date){
     var monthNames = [
@@ -105,7 +111,13 @@ class TravelDealScreen extends Component {
 
                 </View>
                 <View style={{flex:.2,justifyContent:'center'}}>
-                  <Text style={{fontSize:30,color:'red'}}>${this.props.item.budget}</Text>
+                  {
+                    (this.props.item.budget)?
+                    <Text style={{fontSize:30,color:'red'}}>${this.props.item.budget}</Text>
+                    :
+                    null
+                  }
+
                 </View>
             </View>
             <View style={{flex:.50,flexDirection:'row',marginTop:10}}>
@@ -141,7 +153,7 @@ class TravelDealScreen extends Component {
          </Card>
          <Card style={{flex:.5,flexDirection:'column',padding:5,margin:5,backgroundColor:'white'}} >
             <View style={{marginTop:30,flex:0.3,flexDirection:'row',paddingBottom:10,alignItems:"center",alignSelf:"center"}}>
-            <Button onPress={()=> this.onClickDeal(1,this.props.item.budget)} block primary style={{flex:.5,margin:5}}>
+            <Button onPress={()=> this.onClickDeal(1,this.props.item.budget?this.props.item.budget:this.props.budget)} block primary style={{flex:.5,margin:5}}>
               {
                   (this.props.via ===1 )?
                   <Text style={{color:'white'}}>Send Offer</Text>

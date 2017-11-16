@@ -4,7 +4,7 @@ export const EDIT_PROFILE_SUCCESS = 'EDIT_PROFILE_SUCCESS';
 export const EDIT_PROFILE_FAIL = 'EDIT_PROFILE_FAIL';
 export const LOADING_STARTED_EDIT_PROFILE = 'LOADING_STARTED_EDIT_PROFILE';
 
-export const editProfile = (result, email, gender, firstName, lastName, phoneNo, image) => {
+export const editProfile = (result, email, gender, firstName, lastName, phoneNo, image, paypalId) => {
   return function (dispatch) {
     const data = {
          "_id": result,
@@ -14,12 +14,13 @@ export const editProfile = (result, email, gender, firstName, lastName, phoneNo,
          "gender": gender,
          "phone_no": phoneNo,
          "image": image,
+         "paypalId": paypalId
 };
     var request = {
       headers: {
         'Content-Type': 'application/json'
       },
-      method: 'POST',
+      method: 'PUT',
       body: JSON.stringify(data)
     };
     console.log('Request',EDIT_PROFILE,JSON.stringify(data));

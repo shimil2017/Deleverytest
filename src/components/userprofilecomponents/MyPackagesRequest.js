@@ -17,12 +17,13 @@ export default class MyPackagesRequest extends Component {
   }
   componentDidMount() {
     for (var i = 0; i < this.props.data.length; i++) {
-      console.log(i);
-      if (this.props.data[i].is_req_to_package === true && this.props.data[i].is_req_to_traveller === true ) {
+          console.log(this.props.data[i].is_payment);
+      if (this.props.data[i].is_payment === true) {
         this.setState({ isClosed: true}, ()=> console.log("isClosed"));
         break;
       }
     }
+    console.log(this.props.data);
   }
   getDate(date){
     var monthNames = [
@@ -36,11 +37,13 @@ export default class MyPackagesRequest extends Component {
     return date.getDate()+" "+monthNames[monthIndex]+" "+ date.getFullYear()
   }
   onRowClick(item) {
-    if (item.is_req_to_package === true && item.is_req_to_traveller === true) {
+    if (item.is_req_to_package === true && item.is_req_to_traveller === true && item.is_payment ===true) {
       // alert("The deal is successfully closed")
       // ChangeStatusScene
     //  alert(this.props.packageDetails.length);
-      Actions.ChangeStatusScene({ packageDetails: this.props.packageDetails, travellerDetails: item.traveller_plan_id, via: 1});
+    //alert(this.props.data._id)
+    //console.log("========",item);
+      Actions.ChangeStatusScene({dealId: item._id, packageDetails: this.props.packageDetails, travellerDetails: item.traveller_plan_id, via: 1});
     }else if(this.state.isClosed ===false) {
       Actions.FinalDealScreen({ traveller_plan_id: item.traveller_plan_id._id,
           package_id: item.package_id,

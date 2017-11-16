@@ -22,7 +22,7 @@ const mapDispatchToProps = dispatch => {
   return bindActionCreators({ addTravelPlan, loadingAddPackageStarted, getMyTravelPlanList, myPlanStartLoading, editPlan  }, dispatch)
 
 }
- class PostPackageScreen extends Component{
+ class PostPackageScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -240,7 +240,7 @@ const mapDispatchToProps = dispatch => {
           }
         }}
 
-        currentLocation={true} // Will add a 'Current location' button at the top of the predefined places list
+        currentLocation={false} // Will add a 'Current location' button at the top of the predefined places list
         currentLocationLabel="Current location"
         nearbyPlacesAPI='GooglePlacesSearch' // Which API to use: GoogleReverseGeocoding or GooglePlacesSearch
         GoogleReverseGeocodingQuery={{
@@ -259,9 +259,8 @@ const mapDispatchToProps = dispatch => {
           <Text>Chosse from Map</Text>
         </TouchableOpacity>}
       />
-
-
     </Modal>
+
      <MapView
        followsUserLocation={true}
        ref={ref => { this.map = ref; }}

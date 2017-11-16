@@ -1,9 +1,3 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * @flow
- */
-
 import React, { Component } from 'react';
 import {
   AppRegistry,
@@ -57,20 +51,17 @@ export default class TravelPlanScreen extends Component{
     if (this.state.selectedStartDate === null ) {
       alert("Please select a start date of travel plan.");
     }
-    // else if (this.state.budget === null ) {
-    //   alert("Please add budget.");
-    // }
     else {
       Actions.PostPackageScreen({
          isTravelPlan: true,
          startDate: this.state.selectedStartDate,
-         endDate: this.state.selectedEndDate,
+         endDate: this.state.selectedEndDate?this.state.selectedEndDate: this.state.selectedStartDate,
          budget: this.state.budget,
-        item1: this.props.item1
+         item1: this.props.item1
        });
     }
   }
-  render(){
+  render() {
     var monthNames = [
     "January", "February", "March",
     "April", "May", "June", "July",
@@ -83,7 +74,7 @@ export default class TravelPlanScreen extends Component{
   const newstartDate= new Date(selectedStartDate);
   const newendDate=new Date(selectedEndDate);
   const startDate  =  selectedStartDate ? newstartDate.getDate()+" "+monthNames[newstartDate.getMonth()]+" "+ newstartDate.getFullYear() : '';
-  const endDate =  newendDate ?  newendDate.getDate()+" "+monthNames[ newendDate.getMonth()]+" "+  newendDate.getFullYear() : '';
+  const endDate =  selectedEndDate ?  newendDate.getDate()+" "+monthNames[ newendDate.getMonth()]+" "+  newendDate.getFullYear() : '';
 
   var nextDate = new Date(selectedStartDate);
   var nextWeek = selectedStartDate?new Date(nextDate.getTime() + 7 * 24 * 60 * 60 * 1000):new Date(minDate.getTime() + 30 * 24 * 60 * 60 * 1000);
@@ -113,7 +104,7 @@ export default class TravelPlanScreen extends Component{
             onPress={()=> this.onContinueClick()}
             style={{ width:300, marginTop: 10, justifyContent: 'center', alignItems:"center", alignSelf:"center"}}
             primary>
-            <Text>Continue</Text>
+            <Text style={{ color: 'white' }}>Continue</Text>
           </Button>
           </Form>
         </View>

@@ -7,14 +7,16 @@ import { connect } from 'react-redux';
 import { getMyTravelPlanList, myPlanStartLoading, pullToRefreshTravelerList } from '../../actions/MyTravelPlansListActions';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Actions } from 'react-native-router-flux';
-const mapStateToProps = ({ MyTravelPlanListReducer, LoginReducer, SignUpReducer  }) => {
+const mapStateToProps = ({ MyTravelPlanListReducer, LoginReducer, SignUpReducer, TravelDealReducer  }) => {
 
   return {
     travelersListResponse: MyTravelPlanListReducer.travelersListResponse,
     loading: MyTravelPlanListReducer.isLoading,
     isRegistered: SignUpReducer.isRegistered,
     loggedIn: LoginReducer.loggedIn,
-    pullToRefreshTravelers: MyTravelPlanListReducer.pullToRefreshTravelers
+    pullToRefreshTravelers: MyTravelPlanListReducer.pullToRefreshTravelers,
+    isPayment: TravelDealReducer.isPayment,
+    loginResponse: LoginReducer.loginResponse
   };
 };
 const mapDispatchToProps = dispatch => {
@@ -71,6 +73,10 @@ class MyTravelPlansScreen extends Component {
         console.log("Error getting Token",error);
       }
     }
+    // if (nextProps.isPayment !== this.props.isPayment &&  nextProps.isPayment ===true) {
+    //       this.props.myPlanStartLoading();
+    //       this.props.getMyTravelPlanList(this.props.loginResponse._id);
+    // }
   }
   _onRefresh() {
     //this.setState({refreshing: true});

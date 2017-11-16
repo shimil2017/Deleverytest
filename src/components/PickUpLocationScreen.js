@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
-import { View, Text, TouchableOpacity, Dimensions, AsyncStorage, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, Modal } from 'react-native';
 import { Spinner } from 'native-base';
 import MapView from 'react-native-maps';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Button } from 'react-native-elements';
-import { Actions } from 'react-native-router-flux';
 import Geocoder from 'react-native-geocoding';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { addPickup, removePickup } from '../actions/PickupActions';
+
 const mapStateToProps = ({ PickUpReducer }) => {
   return {
     pickupAddress: PickUpReducer.pickupAddress,
@@ -22,17 +23,17 @@ class PickupLocationScreen extends Component{
   constructor(props) {
     super(props);
     this.state = {
-        region: {
-        latitude: 37.78825,
-        longitude: -122.4324,
+      region: {
+        latitude: 0,
+        longitude: 0,
         latitudeDelta: 0.0922,
         longitudeDelta: 0.0421,
       },
       originLatitude: 0,
       originLongitude: 0,
       showButton: false,
-      startAddress:'',
-      loading:false,
+      startAddress: '',
+      loading: false,
     }
   }
   componentWillUnmount() {
@@ -73,7 +74,7 @@ class PickupLocationScreen extends Component{
         );
   }
   onClickSource(){
-    this.setState({startAddress:'',showButton:true});
+    this.setState({startAddress:'',showButton:true, modalVisible: true, showButton:false, showContinueButton:false});
   }
   render() {
     var _this=this;
@@ -84,7 +85,73 @@ class PickupLocationScreen extends Component{
         left: 0,
         right: 0,
         bottom: 0,}}>
+        <Modal transparent={false} visible={this.state.modalVisible} style={{ flexDirection: "column", flex: 1, marginTop:40 }}>
 
+          <GooglePlacesAutocomplete
+            placeholder= 'Search'
+            minLength={2} // minimum length of text to search
+            autoFocus={false}
+            returnKeyType={'search'} // Can be left out for default return key https://facebook.github.io/react-native/docs/textinput.html#returnkeytype
+            listViewDisplayed='auto' // true/false/undefined
+            fetchDetails={true}
+            renderDescription={row => row.description} // custom description render
+            onPress={(data, details = null) => { // 'details' is provided when fetchDetails = true
+              console.log("=========", details);
+              this.setState({ startAddress: details.formatted_address });
+              this.setState({ originLatitude: details.geometry.location.lat,
+                originLongitude: details.geometry.location.lng, modalVisible: false },
+                  ()=> console.log("sadasdghasg")
+                );
+                this.map.fitToCoordinates([
+                  {latitude:this.state.originLatitude,longitude:this.state.originLongitude},
+                ], {
+                edgePadding: { top: 100, right: 100, bottom: 100, left: 100 },
+                animated: true,
+                });
+              //  this.setState({ isSource: true, isDestination: true, showButton:false, loading: true});
+            }}
+
+            getDefaultValue={() => ''}
+
+            query={{
+              // available options: https://developers.google.com/places/web-service/autocomplete
+              key: 'AIzaSyA8W4LJk2g7BDmtuJNHmdrHUYj9mPEixkQ',
+              language: 'en', // language of the results
+            }}
+
+            styles={{
+              flexDirection:'column',
+              textInputContainer: {
+                width: '100%'
+              },
+              description: {
+                fontWeight: 'bold'
+              },
+              predefinedPlacesDescription: {
+                color: '#1faadb'
+              }
+            }}
+
+            currentLocation={false} // Will add a 'Current location' button at the top of the predefined places list
+            currentLocationLabel=""
+            nearbyPlacesAPI='GooglePlacesSearch' // Which API to use: GoogleReverseGeocoding or GooglePlacesSearch
+            GoogleReverseGeocodingQuery={{
+              // available options for GoogleReverseGeocoding API : https://developers.google.com/maps/documentation/geocoding/intro
+            }}
+            GooglePlacesSearchQuery={{
+              // available options for GooglePlacesSearch API : https://developers.google.com/places/web-service/search
+              rankby: 'distance',
+              types: 'food'
+            }}
+
+            filterReverseGeocodingByTypes={['locality', 'administrative_area_level_3']} // filter the reverse geocoding results by types - ['locality', 'administrative_area_level_3'] if you want to display only cities
+            debounce={200} // debounce the requests in ms. Set to 0 to remove debounce. By default 0ms.
+            renderLeftButton={() => <Icon name="chevron-left" onPress={()=> this.setState({modalVisible:false})} style={{marginTop:10} } size={25} />}
+            renderRightButton={() => <TouchableOpacity style={{marginTop:10}} onPress={()=> this.onChooseFromMap()}>
+              <Text>Chosse from Map</Text>
+            </TouchableOpacity>}
+          />
+        </Modal>
      <MapView
        ref={ref => { this.map = ref; }}
        loadingEnabled={true}
@@ -121,13 +188,14 @@ class PickupLocationScreen extends Component{
                <Icon onPress={()=> this.onClickSource()} name="create" size={25} color='grey' style={{alignSelf:"flex-end",backgroundColor:'transparent'}} />
                :
                null
-           }{
+           }
+
              <Spinner
                color='#3f51b5'
                animating={this.state.loading}
                style={{ alignSelf:'center',position:'absolute', marginTop: window.height/2-100, left: window.width/2-35 }}
              />
-           }
+
          </View>
         <View style={(this.state.showContinueButton === true)?{flex:.1}:{flex:null}}>
          {

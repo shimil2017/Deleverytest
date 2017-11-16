@@ -37,16 +37,17 @@ class SignUpPage extends Component{
     this.state = {
       email: '',
       password: '',
-      fname:'',
-      lname:'',
-      confirmPassword:'',
-      gender:'',
-      phone:'',
-      base64:'',
+      fname: '',
+      lname: '',
+      confirmPassword: '',
+      gender: '',
+      phone: '',
+      base64: '',
       avatarSource: null,
       countryName: '',
       callingCode: '',
       phoneNo: '',
+      paypalId: ''
     }
   }
   PhoneNumberPickerChanged(country, callingCode, phoneNumber) {
@@ -75,7 +76,7 @@ class SignUpPage extends Component{
 
       console.log("Phone---",this.state.callingCode+''+this.state.phone);
       this.props.loadingStarted();
-      this.props.signUp(this.state.email, this.state.password, this.state.gender, this.state.fname, this.state.lname, '+91'+this.state.callingCode+''+this.state.phone, this.state.base64, this.props.fcmToken, deviceType);
+      this.props.signUp(this.state.email, this.state.password, this.state.gender, this.state.fname, this.state.lname, '+91'+this.state.callingCode+''+this.state.phone, this.state.base64, this.props.fcmToken, deviceType, this.state.paypalId);
   }
 }
 selectPhotoTapped() {
@@ -149,7 +150,15 @@ selectPhotoTapped() {
                     onChangeText={(text) => this.setState({ email: text })}
                   />
                 </Item>
-
+                <Item >
+                  <Icon name="email" size={25} color='black'/>
+                  <Input
+                    placeholder='Paypal Id'
+                    placeholderTextColor = "#aaaaaa"
+                    autoCapitalize = "none"
+                    onChangeText={(text) => this.setState({ paypalId: text })}
+                  />
+                </Item>
                   <PhoneNumberPicker
                     maxLength={12}
                     style={{width: window.width,flex: 1 }}
@@ -196,10 +205,10 @@ selectPhotoTapped() {
                   primary
                   style={{
                     backgroundColor: '#6945D1',
-                    flex:1,
+                    flex: 1,
                     justifyContent: 'center',
-                    alignItems:"center",
-                    alignSelf:"center",
+                    alignItems: "center",
+                    alignSelf: "center",
                     width:300,
                     marginTop:10}}
                   onPress={() => this.submit()}

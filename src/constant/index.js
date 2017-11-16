@@ -1,4 +1,6 @@
-export const SERVER_URL = 'http://172.24.5.36:4106/';
+export const SERVER_URL = 'http://172.24.5.36:4106/'; //Poonam
+//export const SERVER_URL = 'http://172.24.2.237:4106/'; // Akansha
+
 //export const SERVER_URL = 'http://52.34.207.5:4106/';
 export const IMAGE_URL = SERVER_URL + 'assets/upload/profileImg/';
 export const SIGN_UP = SERVER_URL + 'users/add';
@@ -21,3 +23,6 @@ export const My_PREVIOUS =  SERVER_URL + 'package/myPackages';
 export const UPDATE_DEAL_STATUS = SERVER_URL + 'package/tracking/';
 export const UPDATE_PACKAGE = SERVER_URL + 'package/updatePackage';
 export const EDIT_PLAN = SERVER_URL + 'traveller/updatePlans';
+export const UPDATE_LOCATION = SERVER_URL + 'users/updateLatLong';
+export const SAVE_PAYMENTS = SERVER_URL +'dealStatus/savePaymentDetails';
+export const TOTAL_COUNT = SERVER_URL +'users/parcelPosted';

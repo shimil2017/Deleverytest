@@ -27,9 +27,10 @@ import { Actions } from 'react-native-router-flux';
 import MyDelivery from './userprofilecomponents/MyDelivery';
 import MyPreviousPost from './userprofilecomponents/MyPreviousPost';
 
-const mapStateToProps = ({ LoginReducer }) => {
+const mapStateToProps = ({ LoginReducer, MyTravelPlanListReducer }) => {
   return {
     loginResponse: LoginReducer.loginResponse,
+    totalCount: MyTravelPlanListReducer.totalCount
   };
 };
 const mapDispatchToProps = dispatch => {
@@ -135,11 +136,24 @@ class ProfileNew extends Component {
           </View>
           <View style={{ flex: 0.3, flexDirection: 'row', alignItems: 'flex-start', marginTop:30 }}>
             <View style={{ flex: 0.5, alignItems: 'center', justifyContent: 'center', backgroundColor: 'transparent' }}>
-              <Text style={{ color: 'white', fontWeight: 'bold', fontSize: WINDOW_HEIGHT * 0.03 }}>143</Text>
+              {
+                (this.props.totalCount.pdata != undefined)?
+                <Text style={{ color: 'white', fontWeight: 'bold', fontSize: WINDOW_HEIGHT * 0.03 }}>{this.props.totalCount.pdata[0].parcels}</Text>
+                :
+                null
+              }
+
               <Text style={{ color: 'white', fontSize: WINDOW_HEIGHT * 0.023 }}>Parcel Posted</Text>
             </View>
             <View style={{ flex: 0.5, alignItems: 'center', justifyContent: 'center', backgroundColor: 'transparent' }}>
-              <Text style={{ color: 'white', fontWeight: 'bold', fontSize: WINDOW_HEIGHT * 0.03 }}>245</Text>
+              {
+                (this.props.totalCount.tdata != undefined)?
+                  <Text style={{ color: 'white', fontWeight: 'bold', fontSize: WINDOW_HEIGHT * 0.03 }}>{this.props.totalCount.tdata[0].totaldeliveries}</Text>
+                  :
+                  null
+
+              }
+
               <Text style={{ color: 'white', fontSize: WINDOW_HEIGHT * 0.023 }}>Total Delivered</Text>
             </View>
           </View>
@@ -148,7 +162,7 @@ class ProfileNew extends Component {
           <View style={{ flex: 0.2, flexDirection: 'row', backgroundColor: 'white', borderColor: '#dadada', borderBottomWidth: 1 }}>
 
             <TouchableOpacity onPress={() => this.setState({ selected: 'my_packages' })} style={{ flex: 0.25, alignItems: 'center', justifyContent: 'center', borderRightWidth: 1, borderRightColor: '#dadada', borderBottomWidth: 3, borderBottomColor: this.state.selected === 'user' ? '#6643d8' : 'transparent' }}>
-              <TouchableOpacity style={{ height: WINDOW_HEIGHT * 0.038, width: WINDOW_WIDTH * 0.13, alignItems: 'center', justifyContent: 'center' }}>
+              <TouchableOpacity onPress={() => this.setState({ selected: 'my_packages' })} style={{ height: WINDOW_HEIGHT * 0.038, width: WINDOW_WIDTH * 0.13, alignItems: 'center', justifyContent: 'center' }}>
                 <MIcon name='markunread-mailbox' color= {this.state.selected === 'my_packages' ? '#6643d8' : 'grey'} size={25} />
               </TouchableOpacity>
               <Text style={{ fontSize: 12,color:this.state.selected === 'my_packages' ? '#6643d8' : 'grey' }}>My Packages</Text>

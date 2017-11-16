@@ -44,16 +44,8 @@ class EditProfileScreen extends Component {
       phone: '',
       base64: '',
       avatarSource: null,
+      paypalId: ''
     }
-    // this.setState({
-    //   email: this.props.loginResponse.email,
-    //   fname: this.props.loginResponse.first_name,
-    //   lname: this.props.loginResponse.last_name,
-    //   gender: this.props.loginResponse.gender,
-    //   phone: this.props.loginResponse.phone_number,
-    //   base64: '',
-    //   avatarSource: this.props.loginResponse.image,
-    // }, () => console.log("Profile Added"));
   }
   componentWillMount(){
     this.setState({
@@ -64,6 +56,7 @@ class EditProfileScreen extends Component {
       phone: this.props.loginResponse.phone_number,
       base64: this.props.loginResponse.image,
       avatarSource: this.props.loginResponse.image,
+      paypalId: this.props.loginResponse.paypalId,
     }, () => console.log("Profile Added",this.state.email, this.state.avatarSource ));
   }
   submit(){
@@ -81,7 +74,7 @@ class EditProfileScreen extends Component {
       try {
         const value = AsyncStorage.getItem('user_id',(err, result) => {
           if (result !== undefined && result !== null && result !== '') {
-            this.props.editProfile( result, this.state.email, this.state.gender, this.state.fname, this.state.lname, this.state.phone, this.state.base64);
+            this.props.editProfile( result, this.state.email, this.state.gender, this.state.fname, this.state.lname, this.state.phone, this.state.base64, this.state.paypalId);
           }
 
           });
@@ -116,7 +109,7 @@ selectPhotoTapped() {
     }
   });
 }
-  render(){
+  render() {
     return(
       <View style={{ flex: 1, height: window.height }}>
         <Container >
@@ -162,6 +155,16 @@ selectPhotoTapped() {
                     placeholderTextColor = "#aaaaaa"
                     autoCapitalize = "none"
                     onChangeText={(text) => this.setState({ email: text })}
+                  />
+                </Item>
+                <Item >
+                  <Icon name="email" size={25} color='black'/>
+                  <Input
+                    value={this.state.paypalId}
+                    placeholder='Paypal Id'
+                    placeholderTextColor = "#aaaaaa"
+                    autoCapitalize = "none"
+                    onChangeText={(text) => this.setState({ paypalId: text })}
                   />
                 </Item>
                 <Item >

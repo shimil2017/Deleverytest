@@ -34,7 +34,9 @@ import { connect } from 'react-redux';
 import { getTravelerList, pullToRefreshTravelerList, getTravelerListExplore } from './actions/TravelerActions';
 import { getPackagesList, pullToRefreshPackagesList, getPackagesListExplore } from './actions/PackagesListActions';
 import { getMyPackagesList } from './actions/MyPackagesListActions';
-import { getMyTravelPlanList } from './actions/MyTravelPlansListActions';
+import { getMyTravelPlanList, updateLocation, totalCount } from './actions/MyTravelPlansListActions';
+import PaymentWebView from './components/userprofilecomponents/PaymentWebView';
+
 const drawerStyles = { drawer: { shadowColor: '#000', shadowOpacity: 0,elevation:0, shadowRadius: 0,shadowOffset: {height: 0,
 width: 0,
 },
@@ -76,7 +78,9 @@ const mapDispatchToProps = dispatch => {
      getMyPackagesList,
      getMyTravelPlanList,
      getTravelerListExplore,
-     getPackagesListExplore
+     getPackagesListExplore,
+     updateLocation,
+     totalCount
    }, dispatch);
 
 };
@@ -84,15 +88,44 @@ var myLat = 0
 var myLng = 0;
 class Route extends Component{
   constructor(props) {
-    super(props)
-
+    super(props);
+    this.state = {
+      isTrue: false,
+    }
   }
-  componentDidMount(){
+  componentDidMount() {
     this.watchID = navigator.geolocation.watchPosition((position) => {
        myLat = position.coords.latitude;
        myLng = position.coords.longitude;
         console.log("Locations",myLat,myLng);
+        if (this.props.loggedIn) {
+          try {
+            const value = AsyncStorage.getItem('user_id',(err, result) => {
+              if (result !== undefined && result !== null && result !== '') {
+                this.props.updateLocation(result,myLat,myLng);
+              }
+            });
+          } catch (error) {
+            // Error retrieving data
+            console.log("Error getting Token",error);
+          }
+        }
     });
+
+  }
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.loggedIn !== this.props.loggedIn && nextProps.loggedIn) {
+      try {
+        const value = AsyncStorage.getItem('user_id',(err, result) => {
+          if (result !== undefined && result !== null && result !== '') {
+            this.props.updateLocation(result,myLat,myLng);
+          }
+        });
+      } catch (error) {
+        // Error retrieving data
+        console.log("Error getting Token",error);
+      }
+    }
   }
 onEnterExplore(){
   try {
@@ -109,6 +142,19 @@ onEnterExplore(){
         this.props.getTravelerList();
         this.props.getPackagesList();
       }
+      });
+  } catch (error) {
+    // Error retrieving data
+    console.log("Error getting Token",error);
+  }
+}
+onEnterProfile() {
+  try {
+    const value = AsyncStorage.getItem('user_id',(err, result) => {
+      if (result !== undefined && result !== null && result !== '') {
+        this.props.getMyPackagesList(result);
+        this.props.totalCount(result);
+    }
       });
   } catch (error) {
     // Error retrieving data
@@ -242,6 +288,11 @@ onEnterExplore(){
             component={ChangeStatusScene}
             title="ChangeStatusScene"
           />
+          <Scene
+            key="PaymentWebView"
+            component={PaymentWebView}
+            title="PaymentWebView"
+          />
           <Drawer
             key="drawer"
             drawer
@@ -282,6 +333,7 @@ onEnterExplore(){
                 iconName="explore"
                 onEnter={()=> this.onEnterExplore()}
               />
+
              <Scene
                 tabBarLabel='You'
                 key="profile"
@@ -290,8 +342,9 @@ onEnterExplore(){
                 titleStyle={{ color:'white'}}
                 title="My Account"
                 iconName="account-circle"
-
+                onEnter={()=> this.onEnterProfile()}
               />
+
             </Scene>
           </Drawer>
         </Stack>

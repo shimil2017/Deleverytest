@@ -27,7 +27,7 @@ class Payment extends React.Component {
             exp_Month: '',
             exp_Year: '',
             ccv: '',
-            pay_btn: 'false'
+            pay_btn: false,
         };
         this._onChange = this._onChange.bind(this);
         this.onclick = this.onclick.bind(this);
@@ -44,7 +44,8 @@ class Payment extends React.Component {
 
         this.setState({ Card_no: formData.values.number, exp_Month: exp_Month, exp_Year: exp_Year, ccv: formData.values.cvc });
         if (formData.status.expiry == 'valid' && formData.status.number == 'valid' && formData.status.cvc == 'valid') {
-            this.setState({ pay_btn: 'false' })
+            this.setState({ pay_btn: true })
+          //  alert("Valid Form")
         }
 
     };
@@ -83,7 +84,7 @@ class Payment extends React.Component {
             .catch((error) => {
                 console.error(error);
             });
-          
+
     }
     onclick(){
         let cardDetails = {};
@@ -118,12 +119,17 @@ class Payment extends React.Component {
                         onFocus={this._onFocus.bind(this)}
                         onChange={this._onChange} />)
                 }
-                
-                <Button
-                onPress={this.onclick}
-                    title="Add Card"
+                {
+                  this.state.pay_btn?
+                  <Button
+                  onPress={this.onclick}
+                  title="Add Card"
+                  enable={this.state.pay_btn}
+                  />
+                :
+                null
+                }
 
-                />
                 <ScrollView>
                     {this.state.authToken ? <Text>{JSON.stringify(this.state.authToken)}</Text> : null}
                 </ScrollView>

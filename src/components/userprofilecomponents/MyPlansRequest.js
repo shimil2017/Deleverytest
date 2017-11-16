@@ -20,17 +20,17 @@ export default class MyPlansRequest extends Component {
   componentDidMount() {
     for (var i = 0; i < this.props.data.length; i++) {
       console.log(i);
-      if (this.props.data[i].is_req_to_package === true && this.props.data[i].is_req_to_traveller === true ) {
+      if (this.props.data[i].is_payment === true) {
         this.setState({ isClosed: true}, ()=> console.log("isClosed"));
         break;
       }
     }
   }
   onRowClick(item) {
-  
-    if (item.is_req_to_package === true && item.is_req_to_traveller === true) {
+
+    if (item.is_req_to_package === true && item.is_req_to_traveller === true && item.is_payment === true) {
         Actions.ChangeStatusScene({ packageDetails: item.package_id, travellerDetails: this.props.travellerDetails, via: 2});
-    }else if(this.state.isClosed ===false){
+    }else {
       //console.log(item);
       Actions.FinalDealScreen({ traveller_plan_id: item.traveller_plan_id,
           package_id: item.package_id._id,
@@ -38,10 +38,7 @@ export default class MyPlansRequest extends Component {
           via: '2',
           item: item,
         });
-    }else if (this.state.isClosed ===true) {
-      alert("One deal is already closed in request. So you can't check this request details.")
     }
-
   }
   _keyExtractor = (item, index) => item._id;
    render() {
@@ -100,7 +97,7 @@ export default class MyPlansRequest extends Component {
 
                  <View style={{flex:.2,justifyContent:'center'}}>
                    {
-                     (item.is_req_to_package === true && item.is_req_to_traveller === true)?
+                     (item.is_req_to_package === true && item.is_req_to_traveller === true && item.is_payment ===true)?
                       <Icon name="check-circle" size={30} color='#6945D1'/>
                       :
                       <Icon name="watch-later" size={30} color='#6945D1'/>

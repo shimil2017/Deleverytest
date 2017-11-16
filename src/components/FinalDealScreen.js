@@ -8,11 +8,12 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { postTravelDealStatus, loadingAddDealStarted, putTravelDealStatus } from '../actions/TravelDealActions';
 const window = Dimensions.get('window');
-const mapStateToProps = ({ TravelDealReducer }) => {
+const mapStateToProps = ({ TravelDealReducer, LoginReducer }) => {
 
   return {
     addDealResponse: TravelDealReducer.addDealResponse,
     loading: TravelDealReducer.isLoading,
+    loginResponse: LoginReducer.loginResponse
   };
 };
 const mapDispatchToProps = dispatch => {
@@ -23,9 +24,14 @@ class FinalDealScreen extends Component {
   constructor(props){
     super(props);
     console.log("PACKAGE ID ",this.props.package_id,"TRAVEL PLAN ID",this.props.traveller_plan_id);
-    console.log("TNAME",this.props.item.traveller_name,"PNAME",this.props.item.package_name);
+    console.log("TNAME",this.props.item.traveller_name,"PNAME",this.props.item.package_name+"000--"+this.props.item);
   }
   onClickDeal(status, budget, is_req_to_traveller, is_req_to_package ) {
+    console.log("sdghasdfghafsdads",this.props.loginResponse.paypalId);
+    if (this.props.loginResponse.paypalId === undefined || this.props.loginResponse.paypalId === null || this.props.loginResponse.paypalId === ''  ) {
+      alert("Please enter Payppal account id first in Edit Profile to send request");
+    }
+    else {
     if (this.props.via === '1' && status === 0 ) {
       is_req_to_traveller = true;
       is_req_to_package = false;
@@ -45,6 +51,7 @@ class FinalDealScreen extends Component {
            "user_id" : result,
            "is_req_to_traveller":is_req_to_traveller,
            "is_req_to_package":is_req_to_package,
+           "is_buyer": this.props.via === '1'?true:false
          }
          console.log("DEALS REQUEST--",JSON.stringify(requestJSON), this.props.item._id,  this.props.traveller_plan_id);
          this.props.putTravelDealStatus(JSON.stringify(requestJSON), this.props.item._id);
@@ -53,6 +60,7 @@ class FinalDealScreen extends Component {
      // Error retrieving data
      console.log("Error getting Token",error);
    }
+ }
   }
   getDate(date){
     var monthNames = [
@@ -116,7 +124,7 @@ class FinalDealScreen extends Component {
 
                 </View>
                 <View style={{flex:.2,justifyContent:'center'}}>
-                  <Text style={{fontSize:30,color:'red'}}>${this.props.item.budget}</Text>
+                  <Text style={{fontSize:30,color:'red'}}>${this.props.budget}</Text>
                 </View>
             </View>
             <View style={{flex:.50,flexDirection:'row',marginTop:10}}>
@@ -152,8 +160,8 @@ class FinalDealScreen extends Component {
          </Card>
          <Card style={{flex:.5,flexDirection:'column',padding:5,margin:5,backgroundColor:'white'}} >
             <View style={{marginTop:30,flex:0.3,flexDirection:'row',paddingBottom:10,alignItems:"center",alignSelf:"center"}}>
-            <Button onPress={()=> this.onClickDeal(1,this.props.item.budget, true, true)} block primary style={{flex:.5,margin:5}}><Text style={{color:'white'}}> Accept Offer </Text></Button>
-            <Button onPress={()=> this.onClickDeal(2,this.props.item.budget, false, false)} block danger style={{flex:.5,margin:5}}><Text style={{color:'white'}}> Decline Offer </Text></Button>
+            <Button onPress={()=> this.onClickDeal(1,this.props.budget, true, true)} block primary style={{flex:.5,margin:5}}><Text style={{color:'white'}}> Accept Offer </Text></Button>
+            <Button onPress={()=> this.onClickDeal(2,this.props.budget, false, false)} block danger style={{flex:.5,margin:5}}><Text style={{color:'white'}}> Decline Offer </Text></Button>
             </View>
             <View style={{flex:.7,flexDirection:'column'}}>
               <Text style={{marginLeft:10,color:'green',fontSize:18,fontWeight:"bold"}}>Post new offer($)</Text>

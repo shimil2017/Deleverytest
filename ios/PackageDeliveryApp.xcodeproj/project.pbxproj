@@ -330,6 +330,20 @@
 			remoteGlobalIDString = 134814201AA4EA6300B7C361;
 			remoteInfo = RNFIRMessaging;
 		};
+		F7B8AA051FB450A000AED1A9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F7B8AA001FB450A000AED1A9 /* RCTLinking.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = RCTLinking;
+		};
+		F7B8AA071FB450A000AED1A9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F7B8AA001FB450A000AED1A9 /* RCTLinking.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 2D2A28471D9B043800D4039D;
+			remoteInfo = "RCTLinking-tvOS";
+		};
 		F7F6A0751F6AA64F00BE5041 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 146833FF1AC3E56700842450 /* React.xcodeproj */;
@@ -429,6 +443,7 @@
 		F2023CD4BEA5442DBA90F7FE /* libRCTFBLogin.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRCTFBLogin.a; sourceTree = "<group>"; };
 		F70C99C31F9DF9A10074CF0F /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "PackageDeliveryApp/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		F70EDD031F6BCE5400CBB5C9 /* PackageDeliveryApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = PackageDeliveryApp.entitlements; path = PackageDeliveryApp/PackageDeliveryApp.entitlements; sourceTree = "<group>"; };
+		F7B8AA001FB450A000AED1A9 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
 		F7DA68551F9DF403001BE68F /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
 		F7DA68561F9DF403001BE68F /* UserNotificationsUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotificationsUI.framework; path = System/Library/Frameworks/UserNotificationsUI.framework; sourceTree = SDKROOT; };
 		F7F6A07E1F6AA6B100BE5041 /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKCoreKit.framework; sourceTree = "<group>"; };
@@ -658,6 +673,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				F7B8AA001FB450A000AED1A9 /* RCTLinking.xcodeproj */,
 				5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */,
 				146833FF1AC3E56700842450 /* React.xcodeproj */,
 				00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */,
@@ -813,6 +829,15 @@
 			isa = PBXGroup;
 			children = (
 				F7988FAD1F9DEC8C002AF183 /* libRNFIRMessaging.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F7B8AA011FB450A000AED1A9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F7B8AA061FB450A000AED1A9 /* libRCTLinking.a */,
+				F7B8AA081FB450A000AED1A9 /* libRCTLinking-tvOS.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -998,6 +1023,10 @@
 				{
 					ProductGroup = 00C302BC1ABCB91800DB3ED1 /* Products */;
 					ProjectRef = 00C302BB1ABCB91800DB3ED1 /* RCTImage.xcodeproj */;
+				},
+				{
+					ProductGroup = F7B8AA011FB450A000AED1A9 /* Products */;
+					ProjectRef = F7B8AA001FB450A000AED1A9 /* RCTLinking.xcodeproj */;
 				},
 				{
 					ProductGroup = 78C398B11ACF4ADC00677621 /* Products */;
@@ -1287,6 +1316,20 @@
 			fileType = archive.ar;
 			path = libRNFIRMessaging.a;
 			remoteRef = F7988FAC1F9DEC8C002AF183 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F7B8AA061FB450A000AED1A9 /* libRCTLinking.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRCTLinking.a;
+			remoteRef = F7B8AA051FB450A000AED1A9 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F7B8AA081FB450A000AED1A9 /* libRCTLinking-tvOS.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libRCTLinking-tvOS.a";
+			remoteRef = F7B8AA071FB450A000AED1A9 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		F7F6A0761F6AA64F00BE5041 /* libthird-party.a */ = {
@@ -1756,6 +1799,7 @@
 					"$(SRCROOT)/../node_modules/react-native-fcm/ios",
 				);
 				INFOPLIST_FILE = PackageDeliveryApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -1798,6 +1842,7 @@
 					"$(SRCROOT)/../node_modules/react-native-fcm/ios",
 				);
 				INFOPLIST_FILE = PackageDeliveryApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"$(inherited)",

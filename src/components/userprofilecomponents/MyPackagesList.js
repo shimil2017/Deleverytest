@@ -9,7 +9,7 @@ import { connect } from 'react-redux';
 import { getTravelerList } from '../../actions/TravelerActions';
 import { getMyPackagesList, myPackageStartLoading, pullToRefreshMyPackagesList } from '../../actions/MyPackagesListActions';
 import { Actions } from 'react-native-router-flux';
-const mapStateToProps = ({ TravelersListReducer, MyPackagesListReducer, LoginReducer, SignUpReducer }) => {
+const mapStateToProps = ({ TravelersListReducer, MyPackagesListReducer, LoginReducer, SignUpReducer, TravelDealReducer }) => {
 
   return {
     travelersListResponse: TravelersListReducer.travelersListResponse,
@@ -17,7 +17,9 @@ const mapStateToProps = ({ TravelersListReducer, MyPackagesListReducer, LoginRed
     packagesListResponse: MyPackagesListReducer.packagesListResponse,
     isRegistered: SignUpReducer.isRegistered,
     loggedIn: LoginReducer.loggedIn,
-    pullToRefreshPackages: MyPackagesListReducer.pullToRefreshPackages
+    pullToRefreshPackages: MyPackagesListReducer.pullToRefreshPackages,
+    isPayment: TravelDealReducer.isPayment,
+    loginResponse: LoginReducer.loginResponse
   };
 };
 const mapDispatchToProps = dispatch => {
@@ -60,6 +62,10 @@ class MyPackagesList extends Component{
         console.log("Error getting Token",error);
       }
     }
+    // if (nextProps.isPayment !== this.props.isPayment &&  nextProps.isPayment ===true) {
+    //     this.props.myPackageStartLoading();
+    //     this.props.getMyPackagesList(this.props.loginResponse._id);
+    // }
 
   }
   _onRefresh() {

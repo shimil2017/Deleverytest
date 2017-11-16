@@ -177,6 +177,7 @@ class Events extends Component{
       alert("Please choose your package from dropdown to proceed.");
     }else {
       Actions.TravelDealScreen({
+        budget: this.props.myPackagesListResponse.data[this.state.selectedPackageIndex].budget,
         item: item,package_id:this.props.myPackagesListResponse.data[this.state.selectedPackageIndex]._id, traveller_plan_id: item._id, is_req_to_traveller:true,is_req_to_package:false, via: 1
       })
     }
@@ -293,7 +294,13 @@ class Events extends Component{
 
                        </View>
                        <View style={{flex:.2,justifyContent:'center'}}>
-                         <Text style={{fontSize:30,color:'red'}}>${item.budget}</Text>
+                         {
+                           (item.budget)?
+                           <Text style={{fontSize:25,color:'red'}}>${item.budget}</Text>
+                           :
+                           null
+                         }
+
                        </View>
                    </View>
                    <View style={{flex:.50,flexDirection:'row',marginTop:10}}>
@@ -356,7 +363,7 @@ class Events extends Component{
             <Dropdown
               fontSize={19}
               labelFontSize={19}
-              style={{margin:5, height:60}}
+              style={{margin:5, fontSize:19}}
               selectedItemColor="red"
               onChangeText={(data,index)=> this.setState({selectedTravelPlan:data,selectedTravelPlanIndex: index})}
               label='Choose your travel plan'
@@ -425,7 +432,13 @@ class Events extends Component{
                       </View>
                     </View>
                     <View style={{flex:.2,justifyContent:'center'}}>
-                      <Text style={{fontSize:30,color:'red'}}>${item.budget}</Text>
+                      {
+                        (item.budget)?
+                        <Text style={{fontSize:25,color:'red'}}>${item.budget}</Text>
+                        :
+                        null
+                      }
+
                     </View>
                 </View>
 
